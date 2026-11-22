@@ -153,6 +153,12 @@ th{font-family:var(--f-display);font-weight:500;color:var(--muted);font-size:14p
 .switch{display:flex;gap:12px;align-items:center;cursor:pointer}
 .switch input{width:26px;height:26px;accent-color:var(--kid)}
 input.num{font:inherit;font-size:28px;width:140px;padding:8px 12px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);text-align:center}
+.installbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;border-color:var(--sun);background:color-mix(in srgb,var(--sun) 14%,var(--paper))}
+.installbar .ic{font-size:40px;line-height:1}
+.installbar .tx{flex:1 1 200px;min-width:0}
+.installbar b{font-family:var(--f-display);font-size:20px;font-weight:500}
+a.btn{text-decoration:none;color:inherit}
+a.btn.main{color:var(--sunInk)}
 .steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;font-size:18px}
 .link{font-family:var(--f-en);font-size:15px;background:var(--bg);padding:8px 12px;border-radius:10px;word-break:break-all;min-width:0;flex:1 1 200px;user-select:all}
 .banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;border-color:var(--c)}
@@ -410,12 +416,14 @@ function vHome(){
   const st=mode==="loading"?"กำลังเชื่อมต่อข้อมูล…":mode==="online"?"☁️ บันทึกออนไลน์ เปิดเครื่องไหนก็เล่นต่อได้":"📱 บันทึกในเครื่องนี้เท่านั้น";
   return `<div class="hero"><h1>หนอกับคิดถึง <span class="en">English</span></h1>
   <p class="muted">${NL} บท · วันละ 30 คำ · กริยา 10 · ของใช้ 20 · สอบอ่านให้ผ่าน 80% ไปบทต่อไป</p></div>
+  ${isStandalone()?"":`<div class="card installbar"><span class="ic">📲</span><div class="tx"><b>ติดตั้งเป็นแอปบนแท็บเล็ต</b><div class="muted">มีไอคอนบนหน้าจอ เปิดเต็มจอ เล่นได้แม้ไม่มีเน็ต</div></div>
+    ${canInstallHere()?`<button class="btn main" data-act="install">ติดตั้งแอป</button>`:`<a class="btn main" href="${SITE}" target="_blank" rel="noopener">ไปหน้าติดตั้ง</a>`}</div>`}
   <div class="kids">${KIDS.map(k=>{const d=kids[k.id];const n=Object.keys(d.passed).length;
     return `<button class="kidbtn" style="--c:${k.c}" data-act="kid" data-id="${k.id}" ${mode==="loading"?"disabled":""}>
       <span class="ava">${k.ava}</span><span class="nm">${k.name}</span>
       <span class="row" style="justify-content:center"><span class="pill">⭐ ${totalStars(d)}</span><span class="pill">📘 ผ่าน ${n}/${NL} บท</span>${streak(d)?`<span class="pill">🔥 ${streak(d)} วัน</span>`:""}${weeklyDue(d)?`<span class="pill">📝 มีสอบรอบยอด</span>`:""}${d.resume?`<span class="pill">▶ มีงานค้าง</span>`:""}</span>
     </button>`}).join("")}</div>
-  <div class="parent row" style="justify-content:center">${canInstallHere()?`<button class="btn small main" data-act="install">📲 ติดตั้งเป็นแอป</button>`:""}<button class="btn small" data-act="gate">👨 สำหรับคุณพ่อ</button></div>
+  <div class="parent row" style="justify-content:center"><button class="btn small" data-act="gate">👨 สำหรับคุณพ่อ</button></div>
   <p class="status muted">${st}</p>`;
 }
 
@@ -648,6 +656,7 @@ function vResult(){
 }
 
 /* ---------- ติดตั้งเป็นแอป (เฉพาะเวอร์ชัน github.io) ---------- */
+const SITE="https://turnondark.github.io/nor-kid-english/";
 let installEvt=null;
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;if(view.name==="home"||view.name==="install")render()});
 addEventListener("appinstalled",()=>{installEvt=null;toast("ติดตั้งแล้ว ดูไอคอนที่หน้าจอหลักได้เลย");if(view.name==="home"||view.name==="install")go({name:"home"})});
