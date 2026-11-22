@@ -153,6 +153,8 @@ th{font-family:var(--f-display);font-weight:500;color:var(--muted);font-size:14p
 .switch{display:flex;gap:12px;align-items:center;cursor:pointer}
 .switch input{width:26px;height:26px;accent-color:var(--kid)}
 input.num{font:inherit;font-size:28px;width:140px;padding:8px 12px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);text-align:center}
+.steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;font-size:18px}
+.link{font-family:var(--f-en);font-size:15px;background:var(--bg);padding:8px 12px;border-radius:10px;word-break:break-all;min-width:0;flex:1 1 200px;user-select:all}
 .banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;border-color:var(--c)}
 .banner.wk{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 14%,var(--paper))}
 .banner b{font-family:var(--f-display);font-size:18px;font-weight:500}
@@ -400,7 +402,7 @@ function render(){
   const app=$("#app");
   const kid=view.kid?kidById(view.kid):null;
   app.style.setProperty("--c",kid?kid.c:"var(--kid)");
-  app.innerHTML=({home:vHome,kid:vKid,lesson:vLesson,learn:vLearn,quiz:vQuiz,result:vResult,gate:vGate,dash:vDash})[view.name]();
+  app.innerHTML=({install:vInstall,home:vHome,kid:vKid,lesson:vLesson,learn:vLearn,quiz:vQuiz,result:vResult,gate:vGate,dash:vDash})[view.name]();
   if(view.after){const f=view.after;view.after=null;f()}
 }
 
@@ -413,7 +415,7 @@ function vHome(){
       <span class="ava">${k.ava}</span><span class="nm">${k.name}</span>
       <span class="row" style="justify-content:center"><span class="pill">⭐ ${totalStars(d)}</span><span class="pill">📘 ผ่าน ${n}/${NL} บท</span>${streak(d)?`<span class="pill">🔥 ${streak(d)} วัน</span>`:""}${weeklyDue(d)?`<span class="pill">📝 มีสอบรอบยอด</span>`:""}${d.resume?`<span class="pill">▶ มีงานค้าง</span>`:""}</span>
     </button>`}).join("")}</div>
-  <div class="parent"><button class="btn small" data-act="gate">👨 สำหรับคุณพ่อ</button></div>
+  <div class="parent row" style="justify-content:center">${canInstallHere()?`<button class="btn small main" data-act="install">📲 ติดตั้งเป็นแอป</button>`:""}<button class="btn small" data-act="gate">👨 สำหรับคุณพ่อ</button></div>
   <p class="status muted">${st}</p>`;
 }
 
@@ -645,6 +647,40 @@ function vResult(){
   <div class="bar"><div class="in">${btns}</div></div>`;
 }
 
+/* ---------- ติดตั้งเป็นแอป (เฉพาะเวอร์ชัน github.io) ---------- */
+let installEvt=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvt=e;if(view.name==="home"||view.name==="install")render()});
+addEventListener("appinstalled",()=>{installEvt=null;toast("ติดตั้งแล้ว ดูไอคอนที่หน้าจอหลักได้เลย");if(view.name==="home"||view.name==="install")go({name:"home"})});
+function isStandalone(){try{return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true}catch(e){return false}}
+function canInstallHere(){return !window.claude&&!isStandalone()&&/^https?:$/.test(location.protocol)}
+function browserKind(){
+  const u=navigator.userAgent||"";
+  if(/\bLine\//i.test(u))return "line";
+  if(/FBAN|FBAV|FB_IAB|Instagram|Messenger|; wv\)/i.test(u))return "inapp";
+  if(/SamsungBrowser/i.test(u))return "samsung";
+  if(/iPhone|iPad|iPod/i.test(u))return "ios";
+  if(/Chrome\//i.test(u)&&/Android/i.test(u))return "chrome";
+  return "other";
+}
+function vInstall(){
+  const k=browserKind();
+  const steps={
+    line:["ตอนนี้เกมเปิดอยู่ในแอป LINE ซึ่งติดตั้งแอปไม่ได้","กดปุ่ม ⋮ (หรือ ···) มุมขวาบน","เลือก \"เปิดในเบราว์เซอร์อื่น\" หรือ \"Open in default browser\"","เมื่อเปิดใน Chrome แล้ว กดปุ่ม 📲 ติดตั้งเป็นแอป อีกครั้ง"],
+    inapp:["ตอนนี้เกมเปิดอยู่ในแอปอื่น (เช่น Facebook) ซึ่งติดตั้งแอปไม่ได้","กดปุ่ม ⋮ หรือ ··· ที่มุมจอ","เลือก \"เปิดใน Chrome\" หรือ \"Open in browser\"","เมื่อเปิดใน Chrome แล้ว กดปุ่ม 📲 ติดตั้งเป็นแอป อีกครั้ง"],
+    samsung:["กดปุ่ม ≡ (ขีดสามขีด) มุมขวาล่าง","เลือก \"เพิ่มหน้าไปที่\" (Add page to)","เลือก \"หน้าจอหลัก\" (Home screen) แล้วกด \"เพิ่ม\""],
+    chrome:["กดปุ่ม ⋮ (จุดสามจุด) มุมขวาบนของ Chrome","เลื่อนเมนูลงหา \"ติดตั้งแอป\" หรือ \"เพิ่มลงในหน้าจอหลัก\" (Add to Home screen)","กด \"ติดตั้ง\" หรือ \"เพิ่ม\""],
+    ios:["กดปุ่มแชร์ (สี่เหลี่ยมมีลูกศรชี้ขึ้น)","เลือก \"เพิ่มไปยังหน้าจอโฮม\"","กด \"เพิ่ม\""],
+    other:["เปิดลิงก์นี้ในแอป Chrome","กดปุ่ม ⋮ มุมขวาบน","เลือก \"ติดตั้งแอป\" หรือ \"เพิ่มลงในหน้าจอหลัก\""]
+  }[k];
+  return `<div class="top"><button class="back" data-act="home">← กลับ</button></div>
+  <div class="card stack" style="padding:24px 18px">
+    <div class="row"><img src="icon-192.png" alt="" width="64" height="64" style="border-radius:14px"><div><h2>ติดตั้งเป็นแอป</h2><div class="muted">มีไอคอนบนหน้าจอ เปิดเต็มจอ เล่นได้แม้ไม่มีเน็ต</div></div></div>
+    ${installEvt?`<button class="btn main" data-act="install">📲 กดติดตั้งเลย</button><div class="muted">ถ้าปุ่มนี้ไม่ได้ผล ทำตามขั้นตอนด้านล่าง</div>`:""}
+    <ol class="steps">${steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+    <div class="row"><code class="link">${esc(location.href.split("#")[0])}</code><button class="btn small" data-act="copylink">คัดลอกลิงก์</button></div>
+  </div>`;
+}
+
 /* ---------- parent ---------- */
 function vGate(){
   if(!view.a){view.a=3+Math.floor(Math.random()*7);view.b=4+Math.floor(Math.random()*6)}
@@ -719,6 +755,12 @@ document.addEventListener("click",e=>{
   if(act==="home")return go({name:"home"});
   if(act==="kid")return go({name:"kid",kid:b.dataset.id});
   if(act==="gate")return go({name:"gate"});
+  if(act==="install"){
+    if(installEvt){const ev=installEvt;installEvt=null;ev.prompt();ev.userChoice.then(c=>{if(c&&c.outcome!=="accepted")toast("ยังไม่ได้ติดตั้ง กดใหม่ได้ทุกเมื่อ")}).catch(()=>{});return}
+    return go({name:"install"});
+  }
+  if(act==="copylink"){const url=location.href.split("#")[0];
+    try{navigator.clipboard.writeText(url).then(()=>toast("คัดลอกลิงก์แล้ว"),()=>toast("กดค้างที่ลิงก์เพื่อคัดลอก"))}catch(err){toast("กดค้างที่ลิงก์เพื่อคัดลอก")}return}
   if(act==="lesson"){const i=+b.dataset.i;const d=kids[view.kid];
     if(!unlocked(d,i)){toast(lessonState(d,i)==="weekly"?"สอบรอบยอดประจำสัปดาห์ให้ผ่านก่อน แล้วบทนี้จะเปิด":d.passed[i-1]?"บทนี้จะเปิดพรุ่งนี้ วันนี้ทบทวนบทเดิมก่อนนะ":"ต้องสอบผ่านบทก่อนหน้าก่อน");return}
     return go({name:"lesson",kid:view.kid,i})}
