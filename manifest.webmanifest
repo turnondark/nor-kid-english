@@ -1,0 +1,17 @@
+{
+  "name": "หนอกับคิดถึง English",
+  "short_name": "หนอ&คิดถึง",
+  "description": "เกมคำศัพท์ภาษาอังกฤษ 20 บท วันละ 30 คำ",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#EAF4FF",
+  "theme_color": "#2F7DE1",
+  "lang": "th",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
