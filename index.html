@@ -447,7 +447,7 @@ function vKid(){
     return `<button class="lesson ${cls}" data-act="lesson" data-i="${i}" ${s==="locked"||s==="tomorrow"||s==="weekly"?"aria-disabled=\"true\"":""}>
       <span class="no">บทที่ ${i+1}</span><span class="pv">${L.verbs.slice(0,4).map(w=>esc(w.en)).join(", ")}…</span>
       <span>${L.verbs.slice(0,3).map(w=>w.em).join(" ")} ${L.home[0].em} ${L.school[0].em}</span>
-      <span class="st">${s==="done"?"⭐".repeat(stars)+" "+(+d.best[i]||0)+"%":label[s]}</span></button>`}).join("")}</div>`;
+      <span class="st">${s==="done"?(d.best[i]!=null?"⭐".repeat(stars)+" "+(+d.best[i]||0)+"%":"✅ ผ่านแล้ว"):label[s]}</span></button>`}).join("")}</div>`;
 }
 
 function wordTile(w){return `<button class="word" data-act="say" data-w="${esc(w.en)}"><span class="em">${w.em}</span><span class="w">${esc(w.en)}</span><span class="t">${esc(w.th)}</span></button>`}
