@@ -416,7 +416,7 @@ function vHome(){
   const st=mode==="loading"?"กำลังเชื่อมต่อข้อมูล…":mode==="online"?"☁️ บันทึกออนไลน์ เปิดเครื่องไหนก็เล่นต่อได้":"📱 บันทึกในเครื่องนี้เท่านั้น";
   return `<div class="hero"><h1>หนอกับคิดถึง <span class="en">English</span></h1>
   <p class="muted">${NL} บท · วันละ 30 คำ · กริยา 10 · ของใช้ 20 · สอบอ่านให้ผ่าน 80% ไปบทต่อไป</p></div>
-  ${isStandalone()?"":`<div class="card installbar"><span class="ic">📲</span><div class="tx"><b>ติดตั้งเป็นแอปบนแท็บเล็ต</b><div class="muted">มีไอคอนบนหน้าจอ เปิดเต็มจอ เล่นได้แม้ไม่มีเน็ต</div></div>
+  ${isStandalone()||window.claude?"":`<div class="card installbar"><span class="ic">📲</span><div class="tx"><b>ติดตั้งเป็นแอปบนแท็บเล็ต</b><div class="muted">มีไอคอนบนหน้าจอ เปิดเต็มจอ เล่นได้แม้ไม่มีเน็ต</div></div>
     ${canInstallHere()?`<button class="btn main" data-act="install">ติดตั้งแอป</button>`:`<a class="btn main" href="${SITE}" target="_blank" rel="noopener">ไปหน้าติดตั้ง</a>`}</div>`}
   <div class="kids">${KIDS.map(k=>{const d=kids[k.id];const n=Object.keys(d.passed).length;
     return `<button class="kidbtn" style="--c:${k.c}" data-act="kid" data-id="${k.id}" ${mode==="loading"?"disabled":""}>
