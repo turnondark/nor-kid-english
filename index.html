@@ -153,6 +153,9 @@ th{font-family:var(--f-display);font-weight:500;color:var(--muted);font-size:14p
 .switch{display:flex;gap:12px;align-items:center;cursor:pointer}
 .switch input{width:26px;height:26px;accent-color:var(--kid)}
 input.num{font:inherit;font-size:28px;width:140px;padding:8px 12px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);text-align:center}
+.banner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;border-color:var(--c)}
+.banner.wk{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 14%,var(--paper))}
+.banner b{font-family:var(--f-display);font-size:18px;font-weight:500}
 .toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:14px;font-family:var(--f-display);z-index:20;max-width:calc(100% - 32px)}
 @keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .35s ease-out}
@@ -319,7 +322,7 @@ function beep(ok){
 }
 
 /* ---------- data store (online db, local fallback) ---------- */
-const blank=()=>({passed:{},best:{},stars:{},attempts:[],missed:{},days:[],last:null});
+const blank=()=>({passed:{},best:{},stars:{},attempts:[],missed:{},days:[],last:null,weekly:{},resume:null,learnPos:null});
 function norm(d){const b=blank();if(!d||typeof d!=="object")return b;const o=JSON.parse(JSON.stringify(d));
   for(const k of Object.keys(b)){if(o[k]==null||typeof o[k]!==typeof b[k]||Array.isArray(b[k])!==Array.isArray(o[k]))o[k]=b[k]}
   if(o.last!=null&&typeof o.last!=="number")o.last=null;return o}
@@ -364,8 +367,25 @@ async function initStore(){
 }
 
 /* ---------- progress helpers ---------- */
-function unlocked(k,i){if(i===0)return true;const p=k.passed[i-1];if(!p)return false;return settings.sameDay||p<today()}
-function lessonState(k,i){if(k.passed[i])return "done";if(unlocked(k,i))return "open";if(k.passed[i-1])return "tomorrow";return "locked"}
+/* สอบรอบยอดทุกวันเสาร์: ถ้ายังไม่ผ่าน จะเรียนบทใหม่ไม่ได้ (ทบทวนบทเดิมได้) */
+const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+function satKey(){const d=new Date();d.setDate(d.getDate()-((d.getDay()+1)%7));return ymd(d)}
+function weekStart(key){const [y,m,dd]=key.split("-").map(Number);return ymd(new Date(y,m-1,dd-6))}
+function weeklyDue(k){const key=satKey();const w=k.weekly[key];if(w&&w.passed)return null;return Object.values(k.passed).some(p=>p<=key)?key:null}
+function passedWords(k){return Object.keys(k.passed).map(Number).filter(i=>i>=0&&i<NL).sort((a,b)=>a-b).flatMap(lessonWords)}
+function weeklyPick(k,key,pool){
+  const ws=weekStart(key);
+  const recent=shuffle(pool.filter(w=>{const p=k.passed[w.l];return p>=ws&&p<=key}));
+  const missed=pool.filter(w=>k.missed[w.en]).sort((a,b)=>(+k.missed[b.en]||0)-(+k.missed[a.en]||0));
+  const out=[],seen=new Set();
+  const take=(arr,max)=>{for(const w of arr){if(out.length>=max)break;if(!seen.has(w)){seen.add(w);out.push(w)}}};
+  take(recent,18);take(missed,26);take(shuffle(pool),30);
+  return shuffle(out);
+}
+function baseUnlocked(k,i){if(i===0)return true;const p=k.passed[i-1];if(!p)return false;return settings.sameDay||p<today()}
+function unlocked(k,i){if(k.passed[i])return true;if(weeklyDue(k))return false;return baseUnlocked(k,i)}
+function lessonState(k,i){if(k.passed[i])return "done";if(baseUnlocked(k,i))return weeklyDue(k)?"weekly":"open";if(k.passed[i-1])return "tomorrow";return "locked"}
+function resumeText(r){return (r.weekly?"สอบรอบยอด":(r.practice?"การฝึก":"ข้อสอบ")+" บทที่ "+(r.i+1))+" ทำไปแล้ว "+r.n+"/"+r.qs.length+" ข้อ"}
 const starsFor=p=>p>=100?3:p>=90?2:p>=PASS?1:0;
 const totalStars=k=>Object.values(k.stars).reduce((a,b)=>a+(+b||0),0);
 function streak(k){const set=new Set(k.days);let d=new Date();if(!set.has(today()))d.setDate(d.getDate()-1);let n=0;
@@ -391,7 +411,7 @@ function vHome(){
   <div class="kids">${KIDS.map(k=>{const d=kids[k.id];const n=Object.keys(d.passed).length;
     return `<button class="kidbtn" style="--c:${k.c}" data-act="kid" data-id="${k.id}" ${mode==="loading"?"disabled":""}>
       <span class="ava">${k.ava}</span><span class="nm">${k.name}</span>
-      <span class="row" style="justify-content:center"><span class="pill">⭐ ${totalStars(d)}</span><span class="pill">📘 ผ่าน ${n}/${NL} บท</span>${streak(d)?`<span class="pill">🔥 ${streak(d)} วัน</span>`:""}</span>
+      <span class="row" style="justify-content:center"><span class="pill">⭐ ${totalStars(d)}</span><span class="pill">📘 ผ่าน ${n}/${NL} บท</span>${streak(d)?`<span class="pill">🔥 ${streak(d)} วัน</span>`:""}${weeklyDue(d)?`<span class="pill">📝 มีสอบรอบยอด</span>`:""}${d.resume?`<span class="pill">▶ มีงานค้าง</span>`:""}</span>
     </button>`}).join("")}</div>
   <div class="parent"><button class="btn small" data-act="gate">👨 สำหรับคุณพ่อ</button></div>
   <p class="status muted">${st}</p>`;
@@ -399,14 +419,22 @@ function vHome(){
 
 function vKid(){
   const k=kidById(view.kid), d=kids[k.id];
-  const label={done:"✅ ผ่านแล้ว",open:"▶️ เริ่มเรียน",tomorrow:"🌙 เปิดพรุ่งนี้",locked:"🔒 ยังไม่เปิด"};
+  const label={done:"✅ ผ่านแล้ว",open:"▶️ เริ่มเรียน",weekly:"📝 สอบรอบยอดก่อน",tomorrow:"🌙 เปิดพรุ่งนี้",locked:"🔒 ยังไม่เปิด"};
+  const due=weeklyDue(d), r=d.resume, wkNow=d.weekly[satKey()];
+  const banners=[
+    r?`<div class="card banner"><div><b>มีงานค้างไว้</b><div class="muted">${esc(resumeText(r))}</div></div><button class="btn main small" data-act="resume">▶ ทำต่อ</button></div>`:"",
+    due&&!(r&&r.weekly)?`<div class="card banner wk"><div><b>📝 สอบรอบยอดประจำสัปดาห์</b><div class="muted">ทบทวนคำจากบทที่เรียนมา ${Math.min(30,passedWords(d).length)} ข้อ · ต้องได้ ${PASS}% ถึงจะเรียนบทใหม่ต่อได้</div></div><button class="btn main small" data-act="weekly">เริ่มสอบ</button></div>`:"",
+    !due&&wkNow&&wkNow.passed?`<div class="muted" style="margin-bottom:12px">✅ ผ่านสอบรอบยอดสัปดาห์นี้แล้ว ${+wkNow.best||0}%</div>`:"",
+    !due&&!(wkNow&&wkNow.passed)?`<div class="muted" style="margin-bottom:12px">📅 มีสอบรอบยอดทุกวันเสาร์</div>`:""
+  ].join("");
   return `<div class="top"><button class="back" data-act="home">← เปลี่ยนคน</button>
     <div class="row"><span class="pill">⭐ ${totalStars(d)}</span>${streak(d)?`<span class="pill">🔥 ${streak(d)} วัน</span>`:""}</div></div>
   <div class="row" style="margin-bottom:16px"><span style="font-size:54px">${k.ava}</span><div><h1 style="color:${k.c}">สวัสดี ${k.name}!</h1>
   <div class="muted">เลือกบทเรียนของวันนี้</div></div></div>
+  ${banners}
   <div class="path">${LESSONS.map((L,i)=>{const s=lessonState(d,i);const stars=+d.stars[i]||0;
     const cls=s==="done"?"done":s==="open"?"open":"locked";
-    return `<button class="lesson ${cls}" data-act="lesson" data-i="${i}" ${s==="locked"||s==="tomorrow"?"aria-disabled=\"true\"":""}>
+    return `<button class="lesson ${cls}" data-act="lesson" data-i="${i}" ${s==="locked"||s==="tomorrow"||s==="weekly"?"aria-disabled=\"true\"":""}>
       <span class="no">บทที่ ${i+1}</span><span class="pv">${L.verbs.slice(0,4).map(w=>esc(w.en)).join(", ")}…</span>
       <span>${L.verbs.slice(0,3).map(w=>w.em).join(" ")} ${L.home[0].em} ${L.school[0].em}</span>
       <span class="st">${s==="done"?"⭐".repeat(stars)+" "+(+d.best[i]||0)+"%":label[s]}</span></button>`}).join("")}</div>`;
@@ -425,7 +453,8 @@ function vLesson(){
     <div class="sec"><div class="row"><span class="tag" style="--c:var(--kid)">ของใช้ในโรงเรียน 10 คำ</span></div><div class="words">${L.school.map(wordTile).join("")}</div></div>
   </div>
   <div class="bar"><div class="in">
-    <button class="btn" data-act="learn">📇 เรียนทีละคำ</button>
+    ${d.resume&&!d.resume.weekly&&d.resume.i===i?`<button class="btn main" data-act="resume">▶ ทำต่อ (${d.resume.n}/${d.resume.qs.length})</button>`:""}
+    <button class="btn" data-act="learn">📇 เรียนทีละคำ${d.learnPos&&d.learnPos.i===i&&d.learnPos.j>0?" (ต่อคำที่ "+(d.learnPos.j+1)+")":""}</button>
     <button class="btn" data-act="practice">🎯 ฝึก 10 ข้อ</button>
     <button class="btn main" data-act="test">📝 สอบอ่าน 30 ข้อ</button>
   </div></div>`;
@@ -448,32 +477,70 @@ function vLearn(){
 }
 
 /* ---------- quiz ---------- */
+const WK=w=>w.cat+"|"+w.en;
+const WMAP=new Map();
+LESSONS.forEach((L,i)=>[...L.verbs,...L.home,...L.school].forEach(w=>{w.l=i;WMAP.set(WK(w),w)}));
 function canSpell(w){return /^[a-z]+$/.test(w.en)&&w.en.length<=10}
-function makeQuiz(i,practice){
-  const ws=lessonWords(i);
-  const pick=practice?shuffle(ws).slice(0,10):shuffle(ws);
-  // สอบจริง: เน้นการอ่าน (อ่านคำ→รูป, อ่านคำ→ความหมาย, อ่านประโยคเติมคำ) มีสะกดคำบ้าง ไม่มีโจทย์ฟัง
-  // ข้อสอบและการฝึกใช้ 2 แบบ: อ่านประโยคเติมคำ กับ เรียงตัวอักษรสะกดคำ
+// ข้อสอบและการฝึกใช้ 2 แบบ: อ่านประโยคเติมคำ กับ เรียงตัวอักษรสะกดคำ
+function makeQuiz(pool,pick){
   const types=["sentence","spell"];
-  const READ=["sentence"];
   let rot=shuffle(types),ri=0;
   return pick.map(w=>{
     let t=rot[ri++%rot.length];
     if(ri%rot.length===0)rot=shuffle(types);
     if(t==="spell"&&!canSpell(w))t="sentence";
-    const pool=ws.filter(x=>x!==w&&x.th!==w.th&&x.em!==w.em&&x.en!==w.en);
-    const same=shuffle(pool.filter(x=>x.cat===w.cat)), other=shuffle(pool.filter(x=>x.cat!==w.cat));
+    const cand=pool.filter(x=>x!==w&&x.th!==w.th&&x.em!==w.em&&x.en!==w.en);
+    const same=shuffle(cand.filter(x=>x.cat===w.cat)), other=shuffle(cand.filter(x=>x.cat!==w.cat));
     const opts=shuffle([w,...[...same,...other].slice(0,3)]);
     const q={w,t,opts};
-    if(t==="spell"){q.tiles=shuffle(w.en.split("").map((ch,ix)=>({ch,ix})));q.used=[]}
-    if(t==="sentence")q.s=sentenceFor(w);
+    if(t==="spell"){q.tiles=shuffle(w.en.split("").map(ch=>({ch})));q.used=[]}
+    else q.s=sentenceFor(w);
     return q;
   });
 }
-function startQuiz(practice){
-  view={name:"quiz",kid:view.kid,i:view.i,practice,qs:makeQuiz(view.i,practice),n:0,ok:0,missed:[],answered:null,busy:true};
-  render();window.scrollTo(0,0);
+/* บันทึกข้อสอบที่ทำค้างไว้ทุกข้อ ปิดแอปแล้วกลับมาทำต่อได้ */
+const packQ=q=>({w:WK(q.w),t:q.t,o:q.opts.map(WK),s:q.s||"",ti:q.tiles?q.tiles.map(x=>x.ch).join(""):""});
+function unpackQ(p){
+  const q={w:WMAP.get(p.w),t:p.t,opts:(Array.isArray(p.o)?p.o:[]).map(k=>WMAP.get(k))};
+  if(!q.w||q.opts.length!==4||q.opts.some(x=>!x))throw new Error("bad question");
+  if(q.t==="spell"){q.tiles=String(p.ti||"").split("").map(ch=>({ch}));q.used=[];if(q.tiles.length!==q.w.en.length)throw new Error("bad tiles")}
+  else{q.t="sentence";q.s=String(p.s||"");if(!q.s.includes("___"))q.s=sentenceFor(q.w)}
+  return q;
 }
+function saveProgress(){
+  const v=view;if(v.name!=="quiz")return;
+  const d=kids[v.kid];
+  d.resume={i:v.i,practice:!!v.practice,weekly:v.weekly||null,qs:v.qs.map(packQ),n:v.n,ok:v.ok,missed:v.missed.map(WK),t:Date.now()};
+  writeDoc("kids/"+v.kid,d);
+}
+function beginQuiz(base,pool,pick){
+  view={name:"quiz",...base,qs:makeQuiz(pool,pick),n:0,ok:0,missed:[],answered:null};
+  saveProgress();render();window.scrollTo(0,0);
+}
+function startQuiz(practice){
+  const ws=lessonWords(view.i);
+  beginQuiz({kid:view.kid,i:view.i,practice,weekly:null},ws,practice?shuffle(ws).slice(0,10):shuffle(ws));
+}
+function startWeekly(){
+  const id=view.kid,d=kids[id],key=weeklyDue(d);
+  if(!key){toast("ตอนนี้ยังไม่มีสอบรอบยอด");return}
+  const pool=passedWords(d);
+  beginQuiz({kid:id,i:-1,practice:false,weekly:key},pool,weeklyPick(d,key,pool));
+}
+function resumeQuiz(id){
+  const r=kids[id].resume;
+  try{
+    if(!r||!Array.isArray(r.qs)||!r.qs.length)throw new Error("none");
+    const qs=r.qs.map(unpackQ), n=Math.max(0,Math.min(qs.length-1,+r.n||0));
+    view={name:"quiz",kid:id,i:+r.i,practice:!!r.practice,weekly:r.weekly||null,qs,n,ok:Math.max(0,+r.ok||0),
+      missed:(Array.isArray(r.missed)?r.missed:[]).map(k=>WMAP.get(k)).filter(Boolean),answered:null};
+    render();window.scrollTo(0,0);
+  }catch(e){
+    kids[id].resume=null;writeDoc("kids/"+id,kids[id]);
+    toast("เปิดข้อสอบที่ค้างไว้ไม่ได้ เริ่มใหม่ได้เลย");go({name:"kid",kid:id});
+  }
+}
+function quizLabel(v){return v.weekly?"📝 สอบรอบยอด":v.practice?"🎯 ฝึก":"📝 สอบ"}
 function vQuiz(){
   const q=view.qs[view.n], w=q.w, total=view.qs.length, a=view.answered;
   let body="";
@@ -483,32 +550,20 @@ function vQuiz(){
   const hear=`<button class="speak sm" data-act="say" data-w="${esc(full)}" aria-label="ฟังเสียง">🔊</button>`;
   const fb=a==null?"":`<div class="row" style="justify-content:center">${a.ok?`<div class="feedback ok pop">เก่งมาก! ✔</div>`:`<div class="feedback no">คำตอบคือ <b class="en">${esc(w.en)}</b> = ${esc(w.th)} ${w.em}</div>`}${hear}</div>`;
   const optCls=o=>a==null?"":o===w?"right":(a.pick===o?"wrong":"");
-  if(q.t==="readpic"){
-    body=`<div class="ask">อ่านคำนี้ แล้วเลือกรูปที่ถูก</div><div class="big en">${esc(w.en)}</div>
-    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt emo ${optCls(o)}" data-act="pick" data-ix="${ix}">${o.em}</button>`).join("")}</div>`;
-  }else if(q.t==="sentence"){
+  if(q.t==="sentence"){
     const s=esc(q.s).replace("___",a?`<u>${esc(ansWord)}</u>`:`<span class="blank"></span>`);
     body=`<div class="ask">อ่านประโยค แล้วเลือกคำที่หายไป</div><div class="emo">${w.em}</div><div class="sent en">${s}</div>
     ${a?`<div class="muted">${esc(w.en)} = ${esc(w.th)}</div>`:""}
     <div class="opts">${q.opts.map((o,ix)=>`<button class="opt en ${optCls(o)}" data-act="pick" data-ix="${ix}">${esc(o.en)}</button>`).join("")}</div>`;
-  }else if(q.t==="listen"){
-    body=`<div class="ask">ฟังแล้วเลือกรูปที่ถูก</div><button class="speak" data-act="say" data-w="${esc(w.en)}" aria-label="ฟังอีกครั้ง">🔊</button>
-    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt emo ${optCls(o)}" data-act="pick" data-ix="${ix}">${o.em}</button>`).join("")}</div>`;
-  }else if(q.t==="th2en"){
-    body=`<div class="ask">อ่านตัวเลือก แล้วหาคำภาษาอังกฤษของคำนี้</div><div class="big">${esc(w.th)}</div>
-    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt en ${optCls(o)}" data-act="pick" data-ix="${ix}">${esc(o.en)}</button>`).join("")}</div>`;
-  }else if(q.t==="en2th"){
-    body=`<div class="ask">อ่านคำนี้ แล้วเลือกความหมาย</div><div class="big en">${esc(w.en)}</div>
-    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt ${optCls(o)}" data-act="pick" data-ix="${ix}">${esc(o.th)}</button>`).join("")}</div>`;
   }else{
     const built=q.used.map(u=>q.tiles[u].ch);
     body=`<div class="ask">เรียงตัวอักษรให้เป็นคำ</div><div class="emo">${w.em}</div><div class="row" style="justify-content:center"><div class="big" style="font-size:28px">${esc(w.th)}</div><button class="speak" data-act="say" data-w="${esc(w.en)}" aria-label="ฟังเสียง">🔊</button></div>
     <div class="slots">${w.en.split("").map((_,ix)=>`<button class="slot ${built[ix]?"f":""}" data-act="unspell" data-ix="${ix}" ${a?"disabled":""}>${built[ix]?esc(built[ix]):""}</button>`).join("")}</div>
     ${a?"":`<div class="tiles">${q.tiles.map((t,ix)=>`<button class="tile ${q.used.includes(ix)?"used":""}" data-act="spell" data-ix="${ix}">${esc(t.ch)}</button>`).join("")}</div>`}`;
   }
-  return `<div class="top"><button class="back" data-act="quit">✕ ออก</button>
+  return `<div class="top"><button class="back" data-act="quit">✕ พักไว้ก่อน</button>
     <div class="row" style="flex:1;justify-content:flex-end"><div class="progress"><i style="width:${(view.n+(a?1:0))/total*100}%"></i></div><span class="pill">${view.n+1}/${total}</span>
-    <span class="pill">${view.practice?"🎯 ฝึก":"📝 สอบ"} ✔ ${view.ok}</span></div></div>
+    <span class="pill">${quizLabel(view)} ✔ ${view.ok}</span></div></div>
   <div class="card q">${body}${fb}</div>
   ${a&&!a.ok?`<div class="bar"><div class="in"><button class="btn main" data-act="nextq">ข้อต่อไป →</button></div></div>`:""}`;
 }
@@ -519,57 +574,75 @@ function answer(ok,pick){
   else{view.missed.push(q.w);beep(false);render();setTimeout(()=>say(q.w.en),350)}
 }
 function nextQ(){
-  if(view.name!=="quiz")return;
-  if(!view.answered)return;
+  if(view.name!=="quiz"||!view.answered)return;
   view.answered=null;view.n++;
   if(view.n>=view.qs.length){finishQuiz();return}
-  render();
-  const q=view.qs[view.n];if(q.t==="listen")setTimeout(()=>say(q.w.en),250);
+  saveProgress();render();
 }
 function finishQuiz(){
   const total=view.qs.length, pct=Math.round(view.ok/total*100), pass=pct>=PASS;
-  const id=view.kid, i=view.i;
-  if(view.snaps){for(const k in view.snaps)kids[k]=view.snaps[k];view.snaps=null}
-  const res={name:"result",kid:id,i,practice:view.practice,pct,ok:view.ok,total,missed:view.missed,pass};
+  const id=view.kid, i=view.i, wk=view.weekly, d=kids[id];
+  const res={name:"result",kid:id,i,practice:view.practice,weekly:wk,pct,ok:view.ok,total,missed:view.missed,pass};
+  d.resume=null;
   if(!view.practice){
-    const d=kids[id];
-    d.attempts.push({l:i,p:pct,c:view.ok,n:total,t:Date.now(),m:view.missed.map(w=>w.en)});
+    const at={l:wk?-1:i,p:pct,c:view.ok,n:total,t:Date.now(),m:view.missed.map(w=>w.en)};
+    if(wk)at.w=wk;
+    d.attempts.push(at);
     if(d.attempts.length>200)d.attempts=d.attempts.slice(-200);
     view.missed.forEach(w=>{d.missed[w.en]=(+d.missed[w.en]||0)+1});
-    if(!d.days.includes(today()))d.days.push(today());
-    if(d.days.length>120)d.days=d.days.slice(-120);
-    d.best[i]=Math.max(+d.best[i]||0,pct);
-    const st=starsFor(pct);if(st>(+d.stars[i]||0))d.stars[i]=st;
-    res.firstPass=pass&&!d.passed[i];
-    if(pass&&!d.passed[i])d.passed[i]=today();
-    d.last=Date.now();
-    writeDoc("kids/"+id,d);
+    if(wk){
+      const prev=d.weekly[wk]||{};
+      d.weekly[wk]={best:Math.max(+prev.best||0,pct),tries:(+prev.tries||0)+1,passed:prev.passed||(pass?today():null)};
+    }else{
+      d.best[i]=Math.max(+d.best[i]||0,pct);
+      const st=starsFor(pct);if(st>(+d.stars[i]||0))d.stars[i]=st;
+      if(pass&&!d.passed[i])d.passed[i]=today();
+    }
   }
+  if(!d.days.includes(today()))d.days.push(today());
+  if(d.days.length>120)d.days=d.days.slice(-120);
+  d.last=Date.now();
+  writeDoc("kids/"+id,d);
   view=res;render();window.scrollTo(0,0);
   if(!res.practice&&pass)setTimeout(()=>{beep(true);setTimeout(()=>beep(true),250)},200);
 }
 function vResult(){
   const k=kidById(view.kid), r=view, st=starsFor(r.pct), i=r.i, d=kids[k.id];
-  const nextOpen=i<NL-1&&unlocked(d,i+1);
-  let msg;
-  if(r.practice)msg=r.pct>=PASS?"ฝึกได้ดีมาก ลองสอบจริงเลย!":"ฝึกอีกนิด แล้วจะเก่งขึ้น";
-  else if(r.pass)msg=i===NL-1?"เก่งที่สุด! เรียนจบครบ "+NL+" บทแล้ว 🎉":nextOpen?"ผ่านแล้ว! บทต่อไปเปิดแล้ว":"ผ่านแล้ว! บทที่ "+(i+2)+" จะเปิดพรุ่งนี้ 🌙";
-  else msg="ยังไม่ถึง "+PASS+"% ทบทวนคำที่ผิดแล้วสอบใหม่ได้เลย";
+  const due=weeklyDue(d);
+  const nextOpen=!r.weekly&&i<NL-1&&unlocked(d,i+1);
+  const review=`<button class="btn" data-act="lesson" data-i="${i}">📖 ทบทวนบทนี้</button>`;
+  let title,icon,msg,btns;
+  if(r.weekly){
+    title=r.pass?"ผ่านสอบรอบยอด!":"เกือบแล้ว!";icon=r.pass?"🏅":"💪";
+    msg=r.pass?"เก่งมาก! เรียนบทใหม่ต่อได้แล้ว":"ยังไม่ถึง "+PASS+"% ทบทวนคำที่ผิด แล้วสอบรอบยอดใหม่นะ";
+    btns=r.pass?`<button class="btn main" data-act="kid" data-id="${k.id}">เรียนต่อ →</button>`
+      :`<button class="btn" data-act="kid" data-id="${k.id}">🏠 หน้าบทเรียน</button><button class="btn main" data-act="weekly">🔁 สอบรอบยอดใหม่</button>`;
+  }else if(r.practice){
+    title="ผลการฝึก";icon="🎯";
+    msg=r.pct>=PASS?"ฝึกได้ดีมาก ลองสอบจริงเลย!":"ฝึกอีกนิด แล้วจะเก่งขึ้น";
+    btns=review+`<button class="btn main" data-act="test">📝 สอบจริง</button>`;
+  }else if(r.pass){
+    title="สอบผ่าน!";icon="🏆";
+    msg=i===NL-1?"เก่งที่สุด! เรียนจบครบ "+NL+" บทแล้ว 🎉":due?"ผ่านแล้ว! ต่อไปสอบรอบยอดประจำสัปดาห์ก่อนนะ":nextOpen?"ผ่านแล้ว! บทต่อไปเปิดแล้ว":"ผ่านแล้ว! บทที่ "+(i+2)+" จะเปิดพรุ่งนี้ 🌙";
+    btns=review+(due?`<button class="btn main" data-act="weekly">📝 สอบรอบยอด</button>`
+      :nextOpen?`<button class="btn main" data-act="lesson" data-i="${i+1}">บทที่ ${i+2} →</button>`
+      :`<button class="btn main" data-act="kid" data-id="${k.id}">กลับหน้าบทเรียน</button>`);
+  }else{
+    title="เกือบแล้ว!";icon="💪";
+    msg="ยังไม่ถึง "+PASS+"% ทบทวนคำที่ผิดแล้วสอบใหม่ได้เลย";
+    btns=review+`<button class="btn main" data-act="test">🔁 สอบใหม่</button>`;
+  }
+  const good=r.pass||(r.practice&&r.pct>=PASS);
   return `<div class="card result">
-    <div style="font-size:64px" class="pop">${r.practice?"🎯":r.pass?"🏆":"💪"}</div>
-    <h2>${r.practice?"ผลการฝึก":r.pass?"สอบผ่าน!":"เกือบแล้ว!"}</h2>
-    <div class="score" style="color:${r.pass||r.practice&&r.pct>=PASS?"var(--ok)":"var(--bad)"}">${r.pct}%</div>
+    <div style="font-size:64px" class="pop">${icon}</div>
+    <h2>${title}</h2>
+    <div class="score" style="color:${good?"var(--ok)":"var(--bad)"}">${r.pct}%</div>
     <div class="muted">ถูก ${r.ok} จาก ${r.total} ข้อ ${r.practice?"":"· ต้องได้ "+PASS+"%"}</div>
-    ${!r.practice&&r.pass?`<div class="stars pop">${"⭐".repeat(st)}${"☆".repeat(3-st)}</div>`:""}
+    ${!r.practice&&!r.weekly&&r.pass?`<div class="stars pop">${"⭐".repeat(st)}${"☆".repeat(3-st)}</div>`:""}
     <p style="font-family:var(--f-display);font-size:19px;margin:4px 0">${msg}</p>
     ${r.missed.length?`<div class="muted">คำที่ตอบผิด (แตะเพื่อฟัง)</div><div class="missed">${r.missed.map(w=>`<button class="chip" data-act="say" data-w="${esc(w.en)}">${w.em} <b>${esc(w.en)}</b> ${esc(w.th)}</button>`).join("")}</div>`:""}
   </div>
-  <div class="bar"><div class="in">
-    <button class="btn" data-act="lesson" data-i="${i}">📖 ทบทวนบทนี้</button>
-    ${!r.practice&&r.pass&&nextOpen?`<button class="btn main" data-act="lesson" data-i="${i+1}">บทที่ ${i+2} →</button>`:
-      r.practice?`<button class="btn main" data-act="test">📝 สอบจริง</button>`:
-      r.pass?`<button class="btn main" data-act="kid" data-id="${k.id}">กลับหน้าบทเรียน</button>`:`<button class="btn main" data-act="test">🔁 สอบใหม่</button>`}
-  </div></div>`;
+  <div class="bar"><div class="in">${btns}</div></div>`;
 }
 
 /* ---------- parent ---------- */
@@ -591,10 +664,10 @@ function chart(d){
   let s=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="คะแนนสอบล่าสุด">`;
   [0,50,80,100].forEach(v=>{s+=`<line x1="${L}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1" ${v===80?'stroke-dasharray="5 4" style="stroke:var(--sun)" stroke-width="2"':""}/>
     <text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="var(--muted)">${v}</text>`});
-  at.forEach((a,ix)=>{const x=L+ix*bw+bw*0.18,w=bw*0.64,p=Math.max(0,Math.min(100,+a.p||0));
-    s+=`<rect x="${x}" y="${y(p)}" width="${w}" height="${Math.max(1,y(0)-y(p))}" rx="4" fill="${p>=PASS?"var(--ok)":"var(--bad)"}"><title>บทที่ ${(+a.l||0)+1}: ${p}%</title></rect>
+  at.forEach((a,ix)=>{const x=L+ix*bw+bw*0.18,w=bw*0.64,p=Math.max(0,Math.min(100,+a.p||0)),lb=a.w?"รอบยอด":"บท"+((+a.l||0)+1);
+    s+=`<rect x="${x}" y="${y(p)}" width="${w}" height="${Math.max(1,y(0)-y(p))}" rx="4" fill="${p>=PASS?"var(--ok)":"var(--bad)"}" ${a.w?'stroke="var(--sun)" stroke-width="3"':""}><title>${lb}: ${p}%</title></rect>
     <text x="${x+w/2}" y="${y(p)-4}" text-anchor="middle" font-size="11" fill="var(--ink)">${p}</text>
-    <text x="${x+w/2}" y="${Hh-B+16}" text-anchor="middle" font-size="11" fill="var(--muted)">บท${(+a.l||0)+1}</text>
+    <text x="${x+w/2}" y="${Hh-B+16}" text-anchor="middle" font-size="11" fill="var(--muted)">${lb}</text>
     <text x="${x+w/2}" y="${Hh-B+30}" text-anchor="middle" font-size="10" fill="var(--muted)">${esc(thDate(dayOf(+a.t||0)))}</text>`});
   return `<div class="chartwrap">${s}</svg></div><p class="muted" style="font-size:13px;margin:4px 0 0">เส้นประสีเหลือง = เกณฑ์ผ่าน ${PASS}% · แสดง 14 ครั้งล่าสุด</p>`;
 }
@@ -616,10 +689,13 @@ function vDash(){
         <div class="stat"><div class="v">${at.length}</div><div class="l">จำนวนครั้งที่สอบ</div></div>
         <div class="stat"><div class="v">${last?last.p+"%":"-"}</div><div class="l">คะแนนครั้งล่าสุด</div></div>
         <div class="stat"><div class="v">${streak(d)}</div><div class="l">วันที่เล่นติดกัน</div></div>
+        <div class="stat"><div class="v">${Object.values(d.weekly).filter(w=>w&&w.passed).length}</div><div class="l">สอบรอบยอดผ่าน (สัปดาห์)</div></div>
+        <div class="stat"><div class="v" style="font-size:18px">${weeklyDue(d)?"📝 รอสอบ":(d.weekly[satKey()]&&d.weekly[satKey()].passed?"✅ ผ่าน "+(+d.weekly[satKey()].best||0)+"%":"เสาร์นี้")}</div><div class="l">รอบยอดสัปดาห์นี้</div></div>
       </div>
+      ${d.resume?`<p class="muted" style="margin:0 0 10px">▶ มีงานค้างอยู่: ${esc(resumeText(d.resume))}</p>`:""}
       <h3 style="margin-bottom:6px">คะแนนสอบ</h3>${chart(d)}
       ${at.length?`<h3 style="margin:16px 0 6px">ประวัติการสอบล่าสุด</h3><div class="tblwrap"><table><thead><tr><th>วันที่</th><th>บท</th><th>คะแนน</th><th>ผล</th></tr></thead><tbody>
-        ${at.slice(-8).reverse().map(a=>{const dt=new Date(+a.t||0);return `<tr><td>${esc(thDate(dayOf(+a.t||0)))} ${pad(dt.getHours())}:${pad(dt.getMinutes())}</td><td>${(+a.l||0)+1}</td><td>${+a.c||0}/${+a.n||0} (${+a.p||0}%)</td><td class="${a.p>=PASS?"okt":"badt"}">${a.p>=PASS?"ผ่าน":"ไม่ผ่าน"}</td></tr>`}).join("")}
+        ${at.slice(-8).reverse().map(a=>{const dt=new Date(+a.t||0);return `<tr><td>${esc(thDate(dayOf(+a.t||0)))} ${pad(dt.getHours())}:${pad(dt.getMinutes())}</td><td>${a.w?"📝 รอบยอด":(+a.l||0)+1}</td><td>${+a.c||0}/${+a.n||0} (${+a.p||0}%)</td><td class="${a.p>=PASS?"okt":"badt"}">${a.p>=PASS?"ผ่าน":"ไม่ผ่าน"}</td></tr>`}).join("")}
       </tbody></table></div>`:""}
       <h3 style="margin:16px 0 6px">คำที่ผิดบ่อย</h3>
       ${weak.length?`<div class="missed" style="justify-content:flex-start">${weak.map(([en,c])=>{const w=findW(en);return `<button class="chip" data-act="say" data-w="${esc(en)}">${w?w[2]:""} <b>${esc(en)}</b> ${w?esc(w[1]):""} <span class="muted">×${+c||0}</span></button>`}).join("")}</div>`:`<p class="muted">ยังไม่มีคำที่ตอบผิด</p>`}
@@ -632,7 +708,11 @@ function vDash(){
 }
 
 /* ---------- events ---------- */
+let learnTimer=null;
+function saveLearn(){const v=view;clearTimeout(learnTimer);learnTimer=setTimeout(()=>{const d=kids[v.kid];d.learnPos={i:v.i,j:v.j};writeDoc("kids/"+v.kid,d)},800)}
+let askedPersist=false;
 document.addEventListener("click",e=>{
+  if(!askedPersist){askedPersist=true;try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist().catch(()=>{})}catch(err){}}
   const b=e.target.closest("[data-act]");if(!b||b.disabled)return;
   const act=b.dataset.act;
   if(act==="say"){e.stopPropagation();say(b.dataset.w);return}
@@ -640,14 +720,16 @@ document.addEventListener("click",e=>{
   if(act==="kid")return go({name:"kid",kid:b.dataset.id});
   if(act==="gate")return go({name:"gate"});
   if(act==="lesson"){const i=+b.dataset.i;const d=kids[view.kid];
-    if(!unlocked(d,i)&&!d.passed[i]){toast(d.passed[i-1]?"บทนี้จะเปิดพรุ่งนี้ วันนี้ทบทวนบทเดิมก่อนนะ":"ต้องสอบผ่านบทก่อนหน้าก่อน");return}
+    if(!unlocked(d,i)){toast(lessonState(d,i)==="weekly"?"สอบรอบยอดประจำสัปดาห์ให้ผ่านก่อน แล้วบทนี้จะเปิด":d.passed[i-1]?"บทนี้จะเปิดพรุ่งนี้ วันนี้ทบทวนบทเดิมก่อนนะ":"ต้องสอบผ่านบทก่อนหน้าก่อน");return}
     return go({name:"lesson",kid:view.kid,i})}
-  if(act==="learn")return go({name:"learn",kid:view.kid,i:view.i,j:0});
-  if(act==="next"){view.j++;render();return}
-  if(act==="prev"){view.j--;render();return}
+  if(act==="learn"){const lp=kids[view.kid].learnPos;const j=lp&&lp.i===view.i&&lp.j>0&&lp.j<30?lp.j:0;return go({name:"learn",kid:view.kid,i:view.i,j})}
+  if(act==="next"){view.j++;saveLearn();render();return}
+  if(act==="prev"){view.j--;saveLearn();render();return}
   if(act==="practice")return startQuiz(true);
   if(act==="test")return startQuiz(false);
-  if(act==="quit"){const v=view;if(v.snaps){for(const k in v.snaps)kids[k]=v.snaps[k]}return go({name:"lesson",kid:v.kid,i:v.i})}
+  if(act==="weekly")return startWeekly();
+  if(act==="resume")return resumeQuiz(view.kid);
+  if(act==="quit"){const v=view;saveProgress();toast("เก็บไว้แล้ว กลับมาทำต่อได้");return v.i>=0?go({name:"lesson",kid:v.kid,i:v.i}):go({name:"kid",kid:v.kid})}
   if(act==="nextq")return nextQ();
   if(view.name==="quiz"&&!view.answered){
     const q=view.qs[view.n];
