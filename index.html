@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#EAF4FF">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📘</text></svg>">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>หนอกับคิดถึง English</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Mitr:wght@400;500;600&family=Mali:wght@400;600&display=swap">
+<style>
+/* Layout: one-column "school notebook" app, big tap targets for a tablet; each child has their own color */
+:root{
+  --bg:#EAF4FF; --paper:#FFFFFF; --ink:#17233D; --muted:#5B6B88; --line:#C9DBF2; --grid:#DCE9F8;
+  --sun:#FFB627; --sunInk:#4A3000; --nor:#F2604B; --kid:#1E9C72;
+  --ok:#1B8F52; --bad:#D8443A; --okbg:#DDF6E7; --badbg:#FDE3E0; --lock:#B8C6DB;
+  --f-display:"Mitr","Mali",system-ui,sans-serif;
+  --f-body:"Mali","Mitr",system-ui,sans-serif;
+  --f-en:"Andika","Mali",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1729; --paper:#17233B; --ink:#E9F0FB; --muted:#9AAAC6; --line:#2C3D5E; --grid:#16223A;
+  --sun:#FFC24D; --sunInk:#2A1C00; --nor:#FF8A78; --kid:#3CC898;
+  --ok:#4CCB84; --bad:#FF7468; --okbg:#143A27; --badbg:#45201D; --lock:#3A4A68; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1729; --paper:#17233B; --ink:#E9F0FB; --muted:#9AAAC6; --line:#2C3D5E; --grid:#16223A;
+  --sun:#FFC24D; --sunInk:#2A1C00; --nor:#FF8A78; --kid:#3CC898;
+  --ok:#4CCB84; --bad:#FF7468; --okbg:#143A27; --badbg:#45201D; --lock:#3A4A68; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;min-height:100vh}
+.app{max-width:760px;margin:0 auto;padding-block:16px 120px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;margin:0;text-wrap:balance;line-height:1.25}
+h1{font-size:clamp(28px,6vw,40px)} h2{font-size:24px} h3{font-size:19px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.muted{color:var(--muted)}
+.en{font-family:var(--f-en)}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:10px 22px;border-radius:16px;
+  font-family:var(--f-display);font-size:19px;font-weight:500;background:var(--paper);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.main{background:var(--sun);color:var(--sunInk);border-color:var(--sun);box-shadow:0 4px 0 color-mix(in srgb,var(--sun) 60%,#000)}
+.btn.small{min-height:44px;font-size:16px;padding:6px 14px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.back{font-family:var(--f-display);font-size:17px;color:var(--muted);min-height:44px;padding:0 6px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--paper);border:2px solid var(--line);font-family:var(--f-display);font-size:15px;white-space:nowrap}
+
+/* home */
+.hero{text-align:center;padding:12px 0 6px}
+.hero p{margin:6px 0 0}
+.kids{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
+.kidbtn{background:var(--paper);border:3px solid var(--c);border-radius:24px;padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;
+  box-shadow:0 6px 0 var(--c);transition:transform .08s}
+.kidbtn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--c)}
+.kidbtn .ava{font-size:72px;line-height:1}
+.kidbtn .nm{font-family:var(--f-display);font-size:28px;font-weight:600;color:var(--c)}
+.parent{margin:28px auto 0;display:flex;justify-content:center}
+.status{font-size:14px;text-align:center;margin-top:14px}
+
+/* lesson map */
+.path{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.lesson{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:4px;min-height:120px}
+.lesson .no{font-family:var(--f-display);font-size:20px;font-weight:600}
+.lesson .pv{font-family:var(--f-en);font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lesson .st{margin-top:auto;font-size:15px;font-family:var(--f-display)}
+.lesson.open{border-color:var(--c);box-shadow:0 4px 0 var(--c)}
+.lesson.done{border-color:var(--ok)}
+.lesson.locked{opacity:.6;background:transparent;border-style:dashed}
+.lesson.done .st{color:var(--ok)}
+
+/* words */
+.sec{display:flex;flex-direction:column;gap:10px}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.word{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.word .em{font-size:38px;line-height:1.2}
+.word .w{font-family:var(--f-en);font-size:21px;font-weight:700}
+.word .t{font-size:15px;color:var(--muted)}
+.tag{font-family:var(--f-display);font-size:14px;padding:2px 10px;border-radius:999px;background:var(--c);color:#fff}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:2px solid var(--line);
+  padding-block:12px calc(12px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:5}
+.bar .in{max-width:760px;margin:0 auto;display:flex;gap:10px;flex-wrap:wrap}
+.bar .btn{flex:1 1 160px}
+
+/* flashcard */
+.flash{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:28px 18px}
+.flash .em{font-size:110px;line-height:1.1}
+.flash .w{font-family:var(--f-en);font-size:clamp(40px,10vw,60px);font-weight:700;line-height:1.1}
+.flash .t{font-size:26px;color:var(--muted)}
+.speak{width:72px;height:72px;border-radius:50%;background:var(--sun);color:var(--sunInk);font-size:34px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 4px 0 color-mix(in srgb,var(--sun) 60%,#000)}
+.speak:active{transform:translateY(3px);box-shadow:none}
+.progress{height:12px;background:var(--line);border-radius:99px;overflow:hidden;flex:1;min-width:120px}
+.progress i{display:block;height:100%;background:var(--c);border-radius:99px;transition:width .3s}
+
+/* quiz */
+.q{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:18px 12px}
+.q .ask{font-family:var(--f-display);font-size:18px;color:var(--muted)}
+.q .big{font-size:clamp(34px,8vw,52px);font-weight:700;line-height:1.15}
+.q .emo{font-size:90px;line-height:1.1}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.opt{min-height:84px;border-radius:18px;background:var(--paper);border:3px solid var(--line);font-size:24px;padding:8px;box-shadow:0 4px 0 var(--line)}
+.opt.emo{font-size:56px}
+.opt.en{font-family:var(--f-en);font-weight:700;font-size:26px}
+.opt.right{background:var(--okbg);border-color:var(--ok);box-shadow:0 4px 0 var(--ok)}
+.opt.wrong{background:var(--badbg);border-color:var(--bad);box-shadow:0 4px 0 var(--bad)}
+.slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:62px}
+.slot{width:50px;height:58px;border-radius:12px;border:3px dashed var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--f-en);font-size:32px;font-weight:700;background:var(--paper)}
+.slot.f{border-style:solid;border-color:var(--c)}
+.tiles{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tile{width:56px;height:60px;border-radius:14px;background:var(--sun);color:var(--sunInk);font-family:var(--f-en);font-size:32px;font-weight:700;box-shadow:0 4px 0 color-mix(in srgb,var(--sun) 60%,#000)}
+.tile.used{visibility:hidden}
+.feedback{font-family:var(--f-display);font-size:22px;min-height:34px}
+.speak.sm{width:52px;height:52px;font-size:24px}
+.sent{font-size:clamp(26px,6.5vw,38px);font-weight:700;line-height:1.3}
+.sent u{text-decoration-color:var(--sun);text-decoration-thickness:5px;text-underline-offset:6px}
+.blank{display:inline-block;width:3.2em;height:.9em;border-bottom:5px solid var(--c);vertical-align:baseline}
+.feedback.ok{color:var(--ok)} .feedback.no{color:var(--bad)}
+
+/* result */
+.result{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;padding:26px 16px}
+.result .score{font-family:var(--f-display);font-size:72px;font-weight:600;line-height:1}
+.result .stars{font-size:52px;letter-spacing:6px}
+.missed{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--paper);border:2px solid var(--line);font-size:16px}
+.chip b{font-family:var(--f-en)}
+
+/* dashboard */
+.dash-kid{border-top:6px solid var(--c)}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--bg);border-radius:14px;padding:10px 12px}
+.stat .v{font-family:var(--f-display);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.stat .l{font-size:14px;color:var(--muted)}
+.chartwrap{overflow-x:auto}
+.chartwrap svg{display:block;width:100%;min-width:420px;height:auto}
+table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-display);font-weight:500;color:var(--muted);font-size:14px}
+.tblwrap{overflow-x:auto}
+.okt{color:var(--ok);font-weight:600} .badt{color:var(--bad);font-weight:600}
+.switch{display:flex;gap:12px;align-items:center;cursor:pointer}
+.switch input{width:26px;height:26px;accent-color:var(--kid)}
+input.num{font:inherit;font-size:28px;width:140px;padding:8px 12px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--ink);text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:14px;font-family:var(--f-display);z-index:20;max-width:calc(100% - 32px)}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .35s ease-out}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.progress i{transition:none}}
+@media (max-width:420px){.opt{font-size:20px;min-height:76px}.opt.en{font-size:22px}.tile{width:48px;height:54px;font-size:28px}.slot{width:42px;height:52px;font-size:28px}}
+</style>
+
+<div class="app" id="app"><div class="hero"><h1>หนอกับคิดถึง English</h1><p class="muted">กำลังโหลด…</p></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- คำศัพท์: [อังกฤษ, ไทย, รูป] เรียงจากใช้บ่อยไปน้อย ---------- */
+const V=[ // กริยา 100 คำ (10 บท x 10)
+["go","ไป","➡️"],["come","มา","👋"],["eat","กิน","🍽️"],["drink","ดื่ม","🥤"],["see","เห็น","👀"],["look","มอง","👁️"],["sit","นั่ง","🪑"],["stand","ยืน","🧍"],["sleep","นอนหลับ","😴"],["play","เล่น","⚽"],
+["have","มี","🧺"],["want","อยากได้","🙏"],["like","ชอบ","👍"],["love","รัก","❤️"],["make","ประดิษฐ์","🛠️"],["do","ทำ","✅"],["take","หยิบ","🤲"],["give","ให้","🫴"],["run","วิ่ง","🏃"],["walk","เดิน","🚶"],
+["get","ได้รับ","📬"],["put","วาง","📥"],["open","เปิด","📖"],["close","ปิด","📕"],["read","อ่าน","📚"],["write","เขียน","✍️"],["draw","วาดรูป","🖍️"],["sing","ร้องเพลง","🎤"],["dance","เต้น","💃"],["listen","ฟัง","👂"],
+["say","พูด","🗣️"],["talk","คุยกัน","💬"],["ask","ถาม","❓"],["answer","ตอบ","🙋"],["know","รู้","💡"],["think","คิด","🤔"],["learn","เรียนรู้","🎓"],["teach","สอน","👩‍🏫"],["help","ช่วย","🤝"],["wash","ล้าง","🧼"],
+["brush","แปรง","🪥"],["cook","ทำอาหาร","🧑‍🍳"],["clean","ทำความสะอาด","✨"],["swim","ว่ายน้ำ","🏊"],["jump","กระโดด","🦘"],["climb","ปีน","🧗"],["throw","ขว้าง","🥏"],["catch","รับลูก","🥎"],["kick","เตะ","🦵"],["laugh","หัวเราะ","😂"],
+["cry","ร้องไห้","😢"],["smile","ยิ้ม","😊"],["buy","ซื้อ","🛒"],["sell","ขาย","🏪"],["pay","จ่ายเงิน","💵"],["find","หาเจอ","🔎"],["lose","ทำหาย","🫥"],["wait","รอ","⏳"],["stop","หยุด","🛑"],["start","เริ่ม","🏁"],
+["finish","ทำเสร็จ","🏆"],["call","โทรหา","📞"],["tell","บอก","📢"],["show","ให้ดู","🖼️"],["bring","นำมา","🎒"],["carry","แบก","💼"],["push","ผลัก","👐"],["pull","ดึง","🪢"],["cut","ตัด","✂️"],["count","นับ","🔢"],
+["wear","สวมใส่","👕"],["ride","ขี่","🚲"],["drive","ขับรถ","🚗"],["fly","บิน","✈️"],["fall","ตกลงมา","🍂"],["hold","ถือ","✋"],["touch","แตะ","👆"],["feel","รู้สึก","💓"],["hear","ได้ยิน","🔊"],["smell","ดมกลิ่น","👃"],
+["taste","ชิม","👅"],["watch","ดู (ทีวี)","📺"],["wake up","ตื่นนอน","🌅"],["live","อาศัยอยู่","🏠"],["work","ทำงาน","💻"],["study","ทบทวนบทเรียน","📝"],["practice","ฝึกซ้อม","🏋️"],["try","ลองทำ","🧪"],["use","ใช้","🔧"],["need","จำเป็นต้องมี","🆘"],
+["keep","เก็บรักษา","🗃️"],["share","แบ่งปัน","🍰"],["build","ก่อสร้าง","🧱"],["grow","ปลูก/เติบโต","🌱"],["win","ชนะ","🥇"],["forget","ลืม","🙈"],["remember","จำได้","🧠"],["visit","ไปเยี่ยม","🏡"],["send","ส่ง","📮"],["move","ย้าย","📦"],
+// บท 11-20
+["choose","เลือก","☝️"],["decide","ตัดสินใจ","⚖️"],["guess","เดา","❔"],["check","ตรวจ","☑️"],["spell","สะกดคำ","🔤"],["repeat","พูดซ้ำ","🔁"],["copy","คัดลอก","📋"],["match","จับคู่","🧩"],["add","บวก","➕"],["subtract","ลบ (เลข)","➖"],
+["hug","กอด","🤗"],["kiss","หอม/จูบ","😘"],["clap","ปรบมือ","👏"],["wave","โบกมือ","👋"],["point","ชี้","👉"],["shout","ตะโกน","📣"],["whisper","กระซิบ","🤫"],["lie down","นอนลง","🛌"],["rest","พักผ่อน","🛋️"],["shake","เขย่า","📳"],
+["worry","กังวล","😟"],["hope","หวัง","🌈"],["wish","อธิษฐาน","🌠"],["dream","ฝัน","💭"],["enjoy","สนุกกับ","🥳"],["hate","เกลียด","😠"],["miss","คิดถึง","🥺"],["care","ห่วงใย","💗"],["thank","ขอบคุณ","🙏"],["believe","เชื่อ","🤞"],
+["enter","เข้าไป","🚪"],["leave","ออกไป","🔚"],["arrive","มาถึง","🛬"],["travel","เดินทาง","🧳"],["follow","ตาม","👣"],["lead","นำทาง","🚩"],["cross","ข้าม","🚸"],["turn","เลี้ยว","↪️"],["park","จอดรถ","🅿️"],["hurry","รีบ","⏩"],
+["bake","อบ","🧁"],["boil","ต้ม","♨️"],["fry","ทอด","🍤"],["pour","เท","🫗"],["mix","ผสม","🥣"],["peel","ปอก","🍌"],["chop","สับ","🔪"],["bite","กัด","😬"],["chew","เคี้ยว","😋"],["feed","ให้อาหาร","🐾"],
+["hide","ซ่อน","🫣"],["chase","ไล่จับ","🐕"],["roll","กลิ้ง","🛞"],["spin","หมุน","🌀"],["slide","ลื่นไถล","🛝"],["hop","กระโดดขาเดียว","🐇"],["crawl","คลาน","👶"],["bounce","เด้ง","🏀"],["float","ลอย","🎈"],["tickle","จั๊กจี้","🤭"],
+["fix","ซ่อม","🔧"],["break","ทำแตก","💔"],["hang","แขวน","🪝"],["fold","พับ","📃"],["tie","ผูก","🎀"],["sew","เย็บ","🪡"],["knock","เคาะ","✊"],["dig","ขุด","⛏️"],["fill","เติมให้เต็ม","⛽"],["sweep","กวาด","🧹"],
+["borrow","ยืม","🔄"],["return","คืน","↩️"],["lend","ให้ยืม","📤"],["save","เก็บออม","🐷"],["spend","ใช้จ่าย","💸"],["earn","หาเงิน","🤑"],["order","สั่ง (อาหาร)","🧾"],["pack","จัดกระเป๋า","🧳"],["deliver","ส่งของ","🚚"],["wrap","ห่อ","🎁"],
+["rain","ฝนตก","🌧️"],["snow","หิมะตก","❄️"],["shine","ส่องแสง","🌟"],["blow","พัด/เป่า","🌬️"],["burn","เผาไหม้","🔥"],["melt","ละลาย","🫠"],["freeze","แข็งตัว","🥶"],["dry","ทำให้แห้ง","💨"],["spill","ทำหก","💦"],["pick","เด็ด/เก็บ","🍎"],
+["explain","อธิบาย","🗨️"],["understand","เข้าใจ","👌"],["mean","หมายความว่า","ℹ️"],["agree","เห็นด้วย","🙆"],["join","เข้าร่วม","🧑‍🤝‍🧑"],["invite","เชิญ","💌"],["celebrate","ฉลอง","🎉"],["pray","สวดมนต์","🛕"],["greet","ทักทาย","🙂"],["protect","ปกป้อง","🛡️"]];
+const H=[ // ของใช้ในบ้าน 100 คำ
+["door","ประตู","🚪"],["window","หน้าต่าง","🪟"],["bed","เตียง","🛏️"],["chair","เก้าอี้","🪑"],["table","โต๊ะ","┬─┬"],["cup","ถ้วย","☕"],["plate","จาน","🍽️"],["spoon","ช้อน","🥄"],["fork","ส้อม","🍴"],["bowl","ชาม","🥣"],
+["glass","แก้วน้ำ","🥛"],["bottle","ขวด","🍼"],["fridge","ตู้เย็น","🧊"],["TV","โทรทัศน์","📺"],["fan","พัดลม","🌀"],["light","หลอดไฟ","💡"],["clock","นาฬิกา","⏰"],["phone","โทรศัพท์","📱"],["pillow","หมอน","🛌"],["sofa","โซฟา","🛋️"],
+["toothbrush","แปรงสีฟัน","🪥"],["toothpaste","ยาสีฟัน","🦷"],["soap","สบู่","🧼"],["towel","ผ้าเช็ดตัว","🧖"],["shampoo","แชมพู","🧴"],["mirror","กระจกเงา","🪞"],["toilet","โถส้วม","🚽"],["shower","ฝักบัว","🚿"],["comb","หวี","🪮"],["tissue","กระดาษทิชชู่","🧻"],
+["shirt","เสื้อ","👕"],["pants","กางเกง","👖"],["shoes","รองเท้า","👟"],["socks","ถุงเท้า","🧦"],["hat","หมวก","🧢"],["dress","ชุดกระโปรง","👗"],["bag","กระเป๋า","👜"],["key","กุญแจ","🔑"],["umbrella","ร่ม","☂️"],["glasses","แว่นตา","👓"],
+["stove","เตาไฟ","🔥"],["pot","หม้อ","🍲"],["pan","กระทะ","🍳"],["knife","มีด","🔪"],["chopsticks","ตะเกียบ","🥢"],["kettle","กาน้ำ","🫖"],["trash can","ถังขยะ","🗑️"],["broom","ไม้กวาด","🧹"],["bucket","ถังน้ำ","🪣"],["basket","ตะกร้า","🧺"],
+["box","กล่อง","📦"],["toy","ของเล่น","🧸"],["doll","ตุ๊กตา","🪆"],["kite","ว่าว","🪁"],["balloon","ลูกโป่ง","🎈"],["gift","ของขวัญ","🎁"],["candle","เทียนไข","🕯️"],["picture","รูปภาพ","🖼️"],["camera","กล้องถ่ายรูป","📷"],["radio","วิทยุ","📻"],
+["plant","ต้นไม้","🪴"],["flower","ดอกไม้","🌸"],["vase","แจกัน","🏺"],["ladder","บันได","🪜"],["lamp","ตะเกียง","🪔"],["sponge","ฟองน้ำ","🧽"],["bandage","พลาสเตอร์ยา","🩹"],["medicine","ยา","💊"],["thermometer","ปรอทวัดไข้","🌡️"],["ring","แหวน","💍"],
+["wallet","กระเป๋าสตางค์","👛"],["coat","เสื้อกันหนาว","🧥"],["scarf","ผ้าพันคอ","🧣"],["gloves","ถุงมือ","🧤"],["boots","รองเท้าบูท","👢"],["sandals","รองเท้าแตะ","🩴"],["needle","เข็มเย็บผ้า","🪡"],["thread","ด้าย","🧵"],["button","กระดุม","🔘"],["battery","ถ่านไฟฉาย","🔋"],
+["plug","ปลั๊กไฟ","🔌"],["flashlight","ไฟฉาย","🔦"],["hammer","ค้อน","🔨"],["screwdriver","ไขควง","🪛"],["saw","เลื่อย","🪚"],["lock","แม่กุญแจ","🔒"],["mailbox","ตู้จดหมาย","📫"],["newspaper","หนังสือพิมพ์","📰"],["jar","โหล","🫙"],["salt","เกลือ","🧂"],
+["house","บ้าน","🏠"],["garden","สวน","🌷"],["roof","หลังคา","🛖"],["switch","สวิตช์ไฟ","🎚️"],["hanger","ไม้แขวนเสื้อ","🪝"],["razor","มีดโกน","🪒"],["motorcycle","มอเตอร์ไซค์","🏍️"],["bicycle","จักรยาน","🚲"],["car","รถยนต์","🚗"],["bathtub","อ่างอาบน้ำ","🛁"],
+// บท 11-20
+["sink","อ่างล้างจาน","🚰"],["straw","หลอดดูด","🧋"],["rice","ข้าวสวย","🍚"],["egg","ไข่","🥚"],["bread","ขนมปัง","🍞"],["water","น้ำเปล่า","💧"],["juice","น้ำผลไม้","🍹"],["candy","ลูกอม","🍬"],["cake","เค้ก","🎂"],["cookie","คุกกี้","🍪"],
+["apple","แอปเปิล","🍎"],["banana","กล้วย","🍌"],["orange","ส้ม","🍊"],["mango","มะม่วง","🥭"],["watermelon","แตงโม","🍉"],["grapes","องุ่น","🍇"],["coconut","มะพร้าว","🥥"],["carrot","แครอท","🥕"],["corn","ข้าวโพด","🌽"],["tomato","มะเขือเทศ","🍅"],
+["kitchen","ห้องครัว","🧑‍🍳"],["bedroom","ห้องนอน","🛏️"],["bathroom","ห้องน้ำ","🛀"],["living room","ห้องนั่งเล่น","🛋️"],["wall","กำแพง","🧱"],["floor","พื้น","🟫"],["fence","รั้ว","🚧"],["garage","โรงรถ","🚘"],["elevator","ลิฟต์","🛗"],["closet","ตู้เสื้อผ้า","🗄️"],
+["dog","สุนัข","🐶"],["cat","แมว","🐱"],["fish","ปลา","🐟"],["bird","นก","🐦"],["rabbit","กระต่าย","🐰"],["chicken","ไก่","🐔"],["duck","เป็ด","🦆"],["frog","กบ","🐸"],["turtle","เต่า","🐢"],["hamster","แฮมสเตอร์","🐹"],
+["shorts","กางเกงขาสั้น","🩳"],["swimsuit","ชุดว่ายน้ำ","🩱"],["crown","มงกุฎ","👑"],["purse","กระเป๋าถือ","👝"],["lipstick","ลิปสติก","💄"],["necklace","สร้อยคอ","📿"],["sunglasses","แว่นกันแดด","🕶️"],["high heels","รองเท้าส้นสูง","👠"],["ribbon","ริบบิ้น","🎀"],["nail polish","ยาทาเล็บ","💅"],
+["video game","วิดีโอเกม","🎮"],["joystick","จอยเกม","🕹️"],["CD","แผ่นซีดี","💿"],["telephone","โทรศัพท์บ้าน","☎️"],["wrench","ประแจ","🔧"],["axe","ขวาน","🪓"],["chain","โซ่","⛓️"],["bolt","น็อต","🔩"],["toolbox","กล่องเครื่องมือ","🧰"],["cart","รถเข็น","🛒"],
+["tree","ต้นไม้ใหญ่","🌳"],["grass","หญ้า","🌿"],["leaf","ใบไม้","🍃"],["rock","ก้อนหิน","🪨"],["wood","ไม้","🪵"],["sand","ทราย","🏖️"],["fountain","น้ำพุ","⛲"],["sun","ดวงอาทิตย์","☀️"],["moon","ดวงจันทร์","🌙"],["cloud","เมฆ","☁️"],
+["syringe","เข็มฉีดยา","💉"],["stethoscope","หูฟังหมอ","🩺"],["wheelchair","รถเข็นผู้ป่วย","🦽"],["bubble","ฟองสบู่","🫧"],["safety pin","เข็มกลัด","🧷"],["shopping bag","ถุงช้อปปิ้ง","🛍️"],["money","เงิน","💰"],["coin","เหรียญ","🪙"],["ticket","ตั๋ว","🎫"],["credit card","บัตรเครดิต","💳"],
+["aquarium","ตู้ปลา","🐠"],["fire extinguisher","ถังดับเพลิง","🧯"],["mousetrap","กับดักหนู","🪤"],["scale","ตาชั่ง","⚖️"],["hourglass","นาฬิกาทราย","⌛"],["diary","สมุดบันทึก","📔"],["fireworks","ดอกไม้ไฟ","🎆"],["lantern","โคมไฟจีน","🏮"],["chess","หมากรุก","♟️"],["yarn","ไหมพรม","🧶"],
+["noodles","ก๋วยเตี๋ยว","🍜"],["ice cream","ไอศกรีม","🍦"],["pizza","พิซซ่า","🍕"],["sandwich","แซนด์วิช","🥪"],["hamburger","แฮมเบอร์เกอร์","🍔"],["french fries","เฟรนช์ฟรายส์","🍟"],["popcorn","ป๊อปคอร์น","🍿"],["honey","น้ำผึ้ง","🍯"],["cheese","ชีส","🧀"],["chocolate","ช็อกโกแลต","🍫"]];
+const S=[ // ของใช้ในโรงเรียน 100 คำ
+["book","หนังสือ","📘"],["pencil","ดินสอ","✏️"],["pen","ปากกา","🖊️"],["eraser","ยางลบ","✏️🧽"],["ruler","ไม้บรรทัด","📏"],["notebook","สมุด","📓"],["paper","กระดาษ","📄"],["school bag","กระเป๋านักเรียน","🎒"],["teacher","ครู","🧑‍🏫"],["board","กระดาน","🟩"],
+["student","นักเรียน","🧑‍🎓"],["friend","เพื่อน","👫"],["school","โรงเรียน","🏫"],["crayon","สีเทียน","🖍️"],["scissors","กรรไกร","✂️"],["glue","กาว","🧴"],["paintbrush","พู่กัน","🖌️"],["paint","สีน้ำ","🎨"],["calculator","เครื่องคิดเลข","🧮"],["map","แผนที่","🗺️"],
+["globe","ลูกโลก","🌏"],["pencil case","กล่องดินสอ","🗃️"],["lunch box","กล่องข้าว","🍱"],["water bottle","กระติกน้ำ","🥤"],["uniform","ชุดนักเรียน","👔"],["name tag","ป้ายชื่อ","📛"],["homework","การบ้าน","📝"],["test","ข้อสอบ","💯"],["folder","แฟ้ม","📁"],["calendar","ปฏิทิน","📅"],
+["envelope","ซองจดหมาย","✉️"],["paper clip","คลิปหนีบกระดาษ","📎"],["pin","หมุด","📌"],["flag","ธงชาติ","🇹🇭"],["sticker","สติกเกอร์","⭐"],["dictionary","พจนานุกรม","📕"],["clipboard","คลิปบอร์ด","📋"],["bookmark","ที่คั่นหนังสือ","🔖"],["set square","ไม้ฉาก","📐"],["compass","เข็มทิศ","🧭"],
+["computer","คอมพิวเตอร์","💻"],["mouse","เมาส์","🖱️"],["keyboard","แป้นพิมพ์","⌨️"],["printer","เครื่องพิมพ์","🖨️"],["screen","จอภาพ","🖥️"],["headphones","หูฟัง","🎧"],["microphone","ไมโครโฟน","🎤"],["speaker","ลำโพง","🔈"],["tablet","แท็บเล็ต","📲"],["magnifier","แว่นขยาย","🔍"],
+["football","ฟุตบอล","⚽"],["basketball","บาสเกตบอล","🏀"],["volleyball","วอลเลย์บอล","🏐"],["badminton","แบดมินตัน","🏸"],["ping-pong","ปิงปอง","🏓"],["jump rope","เชือกกระโดด","🪢"],["medal","เหรียญรางวัล","🏅"],["trophy","ถ้วยรางวัล","🏆"],["certificate","เกียรติบัตร","📜"],["playground","สนามเด็กเล่น","🛝"],
+["piano","เปียโน","🎹"],["guitar","กีตาร์","🎸"],["drum","กลอง","🥁"],["violin","ไวโอลิน","🎻"],["trumpet","ทรัมเป็ต","🎺"],["flute","ขลุ่ย","🪈"],["dice","ลูกเต๋า","🎲"],["puzzle","จิ๊กซอว์","🧩"],["robot","หุ่นยนต์","🤖"],["card","การ์ด","🃏"],
+["microscope","กล้องจุลทรรศน์","🔬"],["magnet","แม่เหล็ก","🧲"],["test tube","หลอดทดลอง","🧪"],["library","ห้องสมุด","📚"],["canteen","โรงอาหาร","🍛"],["school bus","รถโรงเรียน","🚌"],["mask","หน้ากากอนามัย","😷"],["helmet","หมวกกันน็อก","⛑️"],["letter","จดหมาย","💌"],["telescope","กล้องโทรทรรศน์","🔭"],
+["chart","แผนภูมิ","📊"],["notepad","กระดาษโน้ต","🗒️"],["graduation cap","หมวกรับปริญญา","🎓"],["saxophone","แซกโซโฟน","🎷"],["skateboard","สเก็ตบอร์ด","🛹"],["yo-yo","โยโย่","🪀"],["drama mask","หน้ากากละคร","🎭"],["dart","ลูกดอก","🎯"],["bow","ธนู","🏹"],["nurse","พยาบาล","🧑‍⚕️"],
+["classroom","ห้องเรียน","🏫"],["principal","ครูใหญ่","👨‍💼"],["school bell","กริ่งโรงเรียน","🔔"],["ID card","บัตรนักเรียน","🪪"],["stopwatch","นาฬิกาจับเวลา","⏱️"],["goal","ประตูฟุตบอล","🥅"],["tent","เต็นท์","⛺"],["milk carton","นมกล่อง","🧃"],["scientist","นักวิทยาศาสตร์","🧑‍🔬"],["tag","ป้ายราคา","🏷️"],
+// บท 11-20
+["office","ห้องพักครู","🏢"],["hall","หอประชุม","🏛️"],["field","สนามกีฬา","🏟️"],["gym","โรงยิม","🤸"],["lab","ห้องทดลอง","🥼"],["music room","ห้องดนตรี","🎵"],["art room","ห้องศิลปะ","🖌️"],["flagpole","เสาธง","🎌"],["restroom","ห้องน้ำโรงเรียน","🚻"],["stage","เวที","🎙️"],
+["math","คณิตศาสตร์","➗"],["science","วิทยาศาสตร์","🧬"],["art","ศิลปะ","🎨"],["music","ดนตรี","🎶"],["English","ภาษาอังกฤษ","🔠"],["Thai","ภาษาไทย","🐘"],["history","ประวัติศาสตร์","🏺"],["P.E.","พลศึกษา","⛹️"],["health","สุขศึกษา","🩺"],["religion","พระพุทธศาสนา","☸️"],
+["circle","วงกลม","⭕"],["square","สี่เหลี่ยมจัตุรัส","⏹️"],["triangle","สามเหลี่ยม","🔺"],["star","ดาว","🌟"],["heart","หัวใจ","💖"],["dot","จุด","⚫"],["diamond","รูปข้าวหลามตัด","🔷"],["grade","เกรด","🅰️"],["word","คำ","🔤"],["number","ตัวเลข","🔢"],
+["red","สีแดง","🟥"],["orange","สีส้ม","🟧"],["yellow","สีเหลือง","🟨"],["green","สีเขียว","🟩"],["blue","สีน้ำเงิน","🟦"],["purple","สีม่วง","🟪"],["brown","สีน้ำตาล","🟫"],["black","สีดำ","⬛"],["white","สีขาว","⬜"],["pink","สีชมพู","🌸"],
+["boy","เด็กผู้ชาย","👦"],["girl","เด็กผู้หญิง","👧"],["classmate","เพื่อนร่วมชั้น","🧑‍🤝‍🧑"],["guard","ยาม","💂"],["janitor","ภารโรง","🧹"],["driver","คนขับรถ","🚖"],["librarian","บรรณารักษ์","📚"],["doctor","หมอ","🧑‍⚕️"],["police","ตำรวจ","👮"],["parent","ผู้ปกครอง","👨‍👩‍👧"],
+["tennis","เทนนิส","🎾"],["baseball","เบสบอล","⚾"],["bat","ไม้ตีลูก","🏏"],["hockey","ฮอกกี้","🏑"],["rugby","รักบี้","🏉"],["bowling","โบว์ลิ่ง","🎳"],["golf","กอล์ฟ","⛳"],["boxing gloves","นวมชกมวย","🥊"],["karate","คาราเต้","🥋"],["ice skates","รองเท้าสเก็ต","⛸️"],
+["seed","เมล็ด","🌰"],["bug","แมลง","🐛"],["butterfly","ผีเสื้อ","🦋"],["ant","มด","🐜"],["bee","ผึ้ง","🐝"],["spider","แมงมุม","🕷️"],["snail","หอยทาก","🐌"],["worm","ไส้เดือน","🪱"],["ladybug","เต่าทอง","🐞"],["mushroom","เห็ด","🍄"],
+["video","วิดีโอ","📹"],["movie","ภาพยนตร์","🎬"],["satellite","ดาวเทียม","🛰️"],["rocket","จรวด","🚀"],["planet","ดาวเคราะห์","🪐"],["email","อีเมล","📧"],["website","เว็บไซต์","🌐"],["password","รหัสผ่าน","🔐"],["disk","แผ่นดิสก์","💾"],["Wi-Fi","ไวไฟ","📶"],
+["concert","คอนเสิร์ต","🎼"],["birthday","วันเกิด","🎂"],["camp","ค่าย","🏕️"],["parade","ขบวนพาเหรด","🎊"],["party","งานปาร์ตี้","🥳"],["festival","เทศกาล","🎏"],["holiday","วันหยุด","🏝️"],["circus","ละครสัตว์","🎪"],["magic show","มายากล","🎩"],["zoo","สวนสัตว์","🦁"],
+["morning","ตอนเช้า","🌄"],["afternoon","ตอนบ่าย","🌤️"],["evening","ตอนเย็น","🌇"],["night","กลางคืน","🌃"],["breakfast","อาหารเช้า","🥞"],["lunch","อาหารกลางวัน","🍛"],["dinner","อาหารเย็น","🍝"],["time","เวลา","🕐"],["week","สัปดาห์","🗓️"],["month","เดือน","📆"]];
+// ประโยคสำหรับข้อสอบอ่าน (___ = คำที่หายไป)
+const PHR={rain:"It will ___ today.",snow:"It will ___ today.",shine:"The sun will ___.",blow:"The wind will ___.",melt:"The ice will ___.",freeze:"The water will ___.",burn:"Fire can ___.",fall:"Leaves ___ from trees.",
+need:"I ___ water.",have:"I ___ a cat.",want:"I ___ a toy.",like:"I ___ ice cream.",love:"I ___ my mom.",know:"I ___ the answer.",lose:"Don't ___ your key.",forget:"Don't ___ your bag.",miss:"I ___ you.",hate:"I ___ bugs.",
+mean:"What does it ___?",worry:"Don't ___.",hope:"I ___ you win.",wish:"I ___ I could fly.",think:"I ___ so.",see:"I ___ a bird.",hear:"I ___ a sound.",feel:"I ___ happy.",smell:"I ___ the flowers.",
+get:"I ___ a gift.",give:"___ me the pen.",take:"___ a pencil.",put:"___ it on the table.",say:"___ hello.",tell:"___ me a story.",ask:"___ the teacher.",answer:"___ the question.",thank:"___ you!",
+agree:"I ___ with you.",understand:"I ___ English.",believe:"I ___ you.",care:"I ___ about you.",enjoy:"I ___ the game.",dream:"I ___ at night.",win:"We will ___!",fly:"Birds can ___.",grow:"Plants ___ fast.",
+live:"I ___ in Thailand.",wear:"___ your hat.",keep:"___ your room clean.",send:"___ a letter.",visit:"Let's ___ Grandma.",show:"___ me your book.",open:"___ the door.",close:"___ the window.",
+read:"___ a book.",write:"___ your name.",eat:"Let's ___ rice.",drink:"___ some water.",wash:"___ your hands.",brush:"___ your teeth.",find:"___ your shoes.",wait:"___ for me.",stop:"___ the car!",
+start:"___ the game.",finish:"___ your homework.",count:"___ to ten.",cut:"___ the paper.",buy:"I ___ candy.",sell:"They ___ fruit.",pay:"Please ___ here.",spill:"Don't ___ the milk.",break:"Don't ___ the glass.",
+borrow:"Can I ___ your pen?",lend:"Can you ___ me a pen?",return:"___ the book.",spend:"Don't ___ all your money.",save:"___ your money.",earn:"I ___ money.",order:"Let's ___ pizza.",
+cross:"___ the road.",turn:"___ left.",park:"___ the car here.",enter:"Please ___ the room.",leave:"Don't ___ me.",arrive:"We ___ at school.",follow:"___ me.",lead:"You ___ the way.",
+greet:"___ the teacher.",invite:"___ your friends.",protect:"___ the baby.",explain:"Please ___ it.",join:"Come and ___ us.",celebrate:"Let's ___!",pray:"We ___ at the temple.",
+check:"___ your answer.",spell:"___ your name.",copy:"___ the words.",repeat:"___ after me.",guess:"___ the answer.",choose:"___ a color.",decide:"You ___.",match:"___ the pictures.",add:"___ two and three.",subtract:"___ one from five.",
+pick:"___ an apple.",fill:"___ the cup.",hang:"___ your coat.",tie:"___ your shoes.",fold:"___ the paper.",sew:"Grandma can ___.",fix:"Dad can ___ it.",dig:"Dogs can ___.",sweep:"___ the floor.",knock:"___ on the door.",
+feed:"___ the cat.",peel:"___ the banana.",chop:"___ the carrot.",boil:"___ the water.",pour:"___ the milk.",mix:"___ the eggs.",bake:"Let's ___ a cake.",fry:"___ an egg.",bite:"Dogs can ___.",chew:"___ your food.",
+dry:"___ your hands.",use:"___ a spoon.",try:"___ again!",study:"___ for the test.",watch:"Let's ___ TV.",taste:"___ the soup.",hold:"___ my hand.",touch:"Don't ___ it!",ride:"I can ___ a bike.",drive:"Dad can ___.",
+do:"___ your homework.",make:"Let's ___ a kite.",play:"Let's ___!",go:"Let's ___!",come:"___ here.",sit:"Please ___ down.",stand:"Please ___ up.",sleep:"Time to ___.","wake up":"___, it's morning!",
+help:"Can you ___ me?",teach:"Teachers ___ us.",learn:"I ___ English.",shout:"Don't ___.",whisper:"Please ___.",wave:"___ goodbye.",point:"___ at the board.",hug:"___ your mom.",kiss:"___ the baby.",
+"lie down":"Please ___.",rest:"Let's ___.",shake:"___ the bottle.",hide:"Let's ___!",chase:"Cats ___ mice.",roll:"___ the ball.",spin:"___ around.",slide:"___ down.",hop:"Rabbits ___.",crawl:"Babies ___.",
+bounce:"___ the ball.",float:"Boats ___ on water.",tickle:"Don't ___ me!",clap:"___ your hands.",carry:"___ the box.",bring:"___ your bag.",call:"___ your mom.",push:"___ the door.",pull:"___ the rope.",
+move:"___ the chair.",build:"Let's ___ a house.",share:"___ your toys.",remember:"I ___ you.",talk:"Let's ___.",listen:"___ to me.",look:"___ at me.",run:"I can ___ fast.",walk:"Let's ___ to school.",
+jump:"I can ___ high.",swim:"I can ___.",climb:"I can ___ a tree.",throw:"___ the ball.",catch:"___ the ball.",kick:"___ the ball.",laugh:"Don't ___.",cry:"Don't ___.",smile:"Please ___.",dance:"Let's ___!",
+sing:"Let's ___!",draw:"___ a cat.",cook:"Mom can ___.",clean:"___ your room.",travel:"I like to ___.",hurry:"___ up!",pack:"___ your bag.",deliver:"They ___ the box.",wrap:"___ the gift.",work:"Mom and Dad ___ hard.",practice:"___ every day.",
+morning:"Good ___!",afternoon:"Good ___!",evening:"Good ___!",night:"Good ___!",breakfast:"I eat ___ at seven.",lunch:"It is time for ___.",dinner:"We eat ___ at home.",time:"What ___ is it?",week:"See you next ___.",month:"See you next ___.",
+birthday:"Happy ___!",party:"Let's have a ___.",holiday:"I love the ___.",grade:"I got a good ___.",word:"Read the ___.",number:"Say the ___.",password:"Type your ___.",website:"Open the ___.",email:"Read the ___.","Wi-Fi":"Turn on the ___.",
+video:"Let's watch the ___.",movie:"Let's watch a ___.",homework:"Do your ___.",test:"I passed the ___.",friend:"You are my ___.",teacher:"Hello, ___!",money:"I have ___.",school:"I go to ___.",TV:"Turn on the ___.",light:"Turn on the ___."};
+const LIKE=new Set(["rice","bread","water","juice","candy","cake","noodles","ice cream","pizza","popcorn","honey","cheese","chocolate","math","science","art","music","English","Thai","history","P.E.","health","religion","tennis","baseball","hockey","rugby","bowling","golf","karate","chess"]);
+const GOTO=new Set(["office","hall","field","gym","lab","music room","art room","restroom","stage","concert","camp","parade","festival","circus","magic show","zoo","library","canteen","playground","classroom","kitchen","bedroom","bathroom","living room","garage","garden"]);
+const COLORS=new Set(["red","orange","yellow","green","blue","purple","brown","black","white","pink"]);
+function sentenceFor(w){
+  if(PHR[w.en])return PHR[w.en];
+  if(w.cat==="v")return Math.random()<.5?"I can ___.":"Let's ___!";
+  if(LIKE.has(w.en))return "I like ___.";
+  if(GOTO.has(w.en))return "Let's go to the ___.";
+  if(COLORS.has(w.en)&&w.th.startsWith("สี"))return "My bag is ___.";
+  return Math.random()<.5?"Look at the ___.":"I see the ___.";
+}
+
+const mk=(a,cat)=>({en:a[0],th:a[1],em:a[2],cat});
+const LESSONS=[];
+for(let i=0;i<V.length/10;i++){
+  LESSONS.push({
+    verbs:V.slice(i*10,i*10+10).map(w=>mk(w,"v")),
+    home:H.slice(i*10,i*10+10).map(w=>mk(w,"h")),
+    school:S.slice(i*10,i*10+10).map(w=>mk(w,"s")),
+  });
+}
+const lessonWords=i=>[...LESSONS[i].verbs,...LESSONS[i].home,...LESSONS[i].school];
+const PASS=80;
+const NL=LESSONS.length;
+const KIDS=[{id:"nor",name:"น้องหนอ",ava:"🦊",c:"var(--nor)"},{id:"kid",name:"คิดถึง",ava:"🐼",c:"var(--kid)"}];
+const CAT={v:"กริยา",h:"ของใช้ในบ้าน",s:"ของใช้ในโรงเรียน"};
+
+/* ---------- utilities ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pad=n=>String(n).padStart(2,"0");
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+const thDate=s=>{if(!s)return "-";const [y,m,d]=String(s).split("-");const M=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];return (+d)+" "+(M[+m-1]||"")};
+const dayOf=ts=>{const d=new Date(ts);return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2600)}
+
+/* ---------- sound ---------- */
+let enVoice=null, ttsCap=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();enVoice=vs.find(v=>/en[-_]US/i.test(v.lang)&&/samantha|google|female|aria|jenny/i.test(v.name))||vs.find(v=>/en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null}catch(e){}}
+try{if("speechSynthesis" in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}}catch(e){}
+function say(text){
+  try{
+    if("speechSynthesis" in window){
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);u.lang="en-US";u.rate=0.8;if(enVoice)u.voice=enVoice;
+      speechSynthesis.speak(u);return;
+    }
+  }catch(e){}
+  if(ttsCap)ttsCap.speak(text,{language:"en",rate:0.8}).catch(()=>{});
+}
+let actx=null;
+function beep(ok){
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const notes=ok?[660,880]:[300,220];
+    notes.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=ok?"triangle":"square";o.frequency.value=f;
+      const t=actx.currentTime+i*0.12;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(ok?0.25:0.12,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.2);
+      o.connect(g).connect(actx.destination);o.start(t);o.stop(t+0.22)});
+  }catch(e){}
+}
+
+/* ---------- data store (online db, local fallback) ---------- */
+const blank=()=>({passed:{},best:{},stars:{},attempts:[],missed:{},days:[],last:null});
+function norm(d){const b=blank();if(!d||typeof d!=="object")return b;const o=JSON.parse(JSON.stringify(d));
+  for(const k of Object.keys(b)){if(o[k]==null||typeof o[k]!==typeof b[k]||Array.isArray(b[k])!==Array.isArray(o[k]))o[k]=b[k]}
+  if(o.last!=null&&typeof o.last!=="number")o.last=null;return o}
+let kids={nor:blank(),kid:blank()}, settings={sameDay:false};
+let mode="loading", DB=null, gotFirst={nor:false,kid:false};
+const LKEY="nor-kid-english-v1";
+function localLoad(){try{const s=JSON.parse(localStorage.getItem(LKEY)||"null");if(s){kids.nor=norm(s.nor);kids.kid=norm(s.kid);settings={sameDay:!!(s.settings&&s.settings.sameDay)}}}catch(e){}}
+function localSave(){try{localStorage.setItem(LKEY,JSON.stringify({nor:kids.nor,kid:kids.kid,settings}))}catch(e){}}
+const queue={};
+function writeDoc(path,body){
+  if(mode!=="online"){localSave();return}
+  const data=JSON.parse(JSON.stringify(body));
+  queue[path]=(queue[path]||Promise.resolve()).then(()=>DB.doc(path).set(data)).catch(e=>{
+    toast(e&&e.code==="invalid_argument"?"บัญชีนี้บันทึกผลไม่ได้ ให้คุณพ่อเพิ่มสิทธิ์ Contributor":"บันทึกไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่");
+  });
+  localSave();
+}
+async function initStore(){
+  localLoad();
+  const fallback=setTimeout(()=>{if(mode==="loading"){mode="local";render()}},10000);
+  let db=null;
+  try{db=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){db=null}
+  try{ttsCap=window.claude&&window.claude.use?await window.claude.use("tts"):null}catch(e){}
+  if(!db){clearTimeout(fallback);mode="local";render();return}
+  DB=db;
+  let pending=3;
+  const done=()=>{if(--pending===0&&mode==="loading"){clearTimeout(fallback);mode="online";render()}};
+  KIDS.forEach(k=>{
+    let first=true;
+    db.doc("kids/"+k.id).onSnapshot(s=>{
+      if(!view.busy){kids[k.id]=s.exists?norm(s.data()):blank()}else{view.pendingSnap=true;view.snaps=view.snaps||{};view.snaps[k.id]=s.exists?norm(s.data()):blank()}
+      if(first&&!s.metadata.fromCache){first=false;mode=mode==="local"?"online":mode;done()}
+      if(mode==="online")refresh();
+    },e=>{toast("เชื่อมต่อข้อมูลออนไลน์ไม่ได้ ใช้การบันทึกในเครื่องแทน");if(mode!=="online"){mode="local";render()}});
+  });
+  let firstS=true;
+  db.doc("settings/main").onSnapshot(s=>{
+    settings={sameDay:!!(s.exists&&s.data().sameDay)};
+    if(firstS&&!s.metadata.fromCache){firstS=false;done()}
+    if(mode==="online")refresh();
+  },()=>{});
+}
+
+/* ---------- progress helpers ---------- */
+function unlocked(k,i){if(i===0)return true;const p=k.passed[i-1];if(!p)return false;return settings.sameDay||p<today()}
+function lessonState(k,i){if(k.passed[i])return "done";if(unlocked(k,i))return "open";if(k.passed[i-1])return "tomorrow";return "locked"}
+const starsFor=p=>p>=100?3:p>=90?2:p>=PASS?1:0;
+const totalStars=k=>Object.values(k.stars).reduce((a,b)=>a+(+b||0),0);
+function streak(k){const set=new Set(k.days);let d=new Date();if(!set.has(today()))d.setDate(d.getDate()-1);let n=0;
+  while(set.has(d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()))){n++;d.setDate(d.getDate()-1)}return n}
+const kidById=id=>KIDS.find(k=>k.id===id);
+
+/* ---------- views ---------- */
+let view={name:"home"};
+function go(v){view=v;render();window.scrollTo(0,0)}
+function refresh(){if(["home","kid","lesson","dash"].includes(view.name))render()}
+function render(){
+  const app=$("#app");
+  const kid=view.kid?kidById(view.kid):null;
+  app.style.setProperty("--c",kid?kid.c:"var(--kid)");
+  app.innerHTML=({home:vHome,kid:vKid,lesson:vLesson,learn:vLearn,quiz:vQuiz,result:vResult,gate:vGate,dash:vDash})[view.name]();
+  if(view.after){const f=view.after;view.after=null;f()}
+}
+
+function vHome(){
+  const st=mode==="loading"?"กำลังเชื่อมต่อข้อมูล…":mode==="online"?"☁️ บันทึกออนไลน์ เปิดเครื่องไหนก็เล่นต่อได้":"📱 บันทึกในเครื่องนี้เท่านั้น";
+  return `<div class="hero"><h1>หนอกับคิดถึง <span class="en">English</span></h1>
+  <p class="muted">${NL} บท · วันละ 30 คำ · กริยา 10 · ของใช้ 20 · สอบอ่านให้ผ่าน 80% ไปบทต่อไป</p></div>
+  <div class="kids">${KIDS.map(k=>{const d=kids[k.id];const n=Object.keys(d.passed).length;
+    return `<button class="kidbtn" style="--c:${k.c}" data-act="kid" data-id="${k.id}" ${mode==="loading"?"disabled":""}>
+      <span class="ava">${k.ava}</span><span class="nm">${k.name}</span>
+      <span class="row" style="justify-content:center"><span class="pill">⭐ ${totalStars(d)}</span><span class="pill">📘 ผ่าน ${n}/${NL} บท</span>${streak(d)?`<span class="pill">🔥 ${streak(d)} วัน</span>`:""}</span>
+    </button>`}).join("")}</div>
+  <div class="parent"><button class="btn small" data-act="gate">👨 สำหรับคุณพ่อ</button></div>
+  <p class="status muted">${st}</p>`;
+}
+
+function vKid(){
+  const k=kidById(view.kid), d=kids[k.id];
+  const label={done:"✅ ผ่านแล้ว",open:"▶️ เริ่มเรียน",tomorrow:"🌙 เปิดพรุ่งนี้",locked:"🔒 ยังไม่เปิด"};
+  return `<div class="top"><button class="back" data-act="home">← เปลี่ยนคน</button>
+    <div class="row"><span class="pill">⭐ ${totalStars(d)}</span>${streak(d)?`<span class="pill">🔥 ${streak(d)} วัน</span>`:""}</div></div>
+  <div class="row" style="margin-bottom:16px"><span style="font-size:54px">${k.ava}</span><div><h1 style="color:${k.c}">สวัสดี ${k.name}!</h1>
+  <div class="muted">เลือกบทเรียนของวันนี้</div></div></div>
+  <div class="path">${LESSONS.map((L,i)=>{const s=lessonState(d,i);const stars=+d.stars[i]||0;
+    const cls=s==="done"?"done":s==="open"?"open":"locked";
+    return `<button class="lesson ${cls}" data-act="lesson" data-i="${i}" ${s==="locked"||s==="tomorrow"?"aria-disabled=\"true\"":""}>
+      <span class="no">บทที่ ${i+1}</span><span class="pv">${L.verbs.slice(0,4).map(w=>esc(w.en)).join(", ")}…</span>
+      <span>${L.verbs.slice(0,3).map(w=>w.em).join(" ")} ${L.home[0].em} ${L.school[0].em}</span>
+      <span class="st">${s==="done"?"⭐".repeat(stars)+" "+(+d.best[i]||0)+"%":label[s]}</span></button>`}).join("")}</div>`;
+}
+
+function wordTile(w){return `<button class="word" data-act="say" data-w="${esc(w.en)}"><span class="em">${w.em}</span><span class="w">${esc(w.en)}</span><span class="t">${esc(w.th)}</span></button>`}
+function vLesson(){
+  const k=kidById(view.kid), d=kids[k.id], i=view.i, L=LESSONS[i];
+  const best=d.best[i];
+  return `<div class="top"><button class="back" data-act="kid" data-id="${k.id}">← บทเรียนทั้งหมด</button>
+  ${best!=null?`<span class="pill">คะแนนดีที่สุด ${best}%</span>`:""}</div>
+  <h1>บทที่ ${i+1}</h1><p class="muted" style="margin:4px 0 18px">แตะคำเพื่อฟังเสียง · ${k.name} ต้องสอบได้ ${PASS}% ขึ้นไป (24 จาก 30 ข้อ)</p>
+  <div class="stack">
+    <div class="sec"><div class="row"><span class="tag" style="--c:var(--sun);color:var(--sunInk)">กริยา 10 คำ</span></div><div class="words">${L.verbs.map(wordTile).join("")}</div></div>
+    <div class="sec"><div class="row"><span class="tag" style="--c:var(--nor)">ของใช้ในบ้าน 10 คำ</span></div><div class="words">${L.home.map(wordTile).join("")}</div></div>
+    <div class="sec"><div class="row"><span class="tag" style="--c:var(--kid)">ของใช้ในโรงเรียน 10 คำ</span></div><div class="words">${L.school.map(wordTile).join("")}</div></div>
+  </div>
+  <div class="bar"><div class="in">
+    <button class="btn" data-act="learn">📇 เรียนทีละคำ</button>
+    <button class="btn" data-act="practice">🎯 ฝึก 10 ข้อ</button>
+    <button class="btn main" data-act="test">📝 สอบอ่าน 30 ข้อ</button>
+  </div></div>`;
+}
+
+function vLearn(){
+  const ws=lessonWords(view.i), j=view.j, w=ws[j];
+  view.after=()=>say(w.en);
+  return `<div class="top"><button class="back" data-act="lesson" data-i="${view.i}">← กลับ</button>
+    <div class="row" style="flex:1;justify-content:flex-end"><div class="progress"><i style="width:${(j+1)/ws.length*100}%"></i></div><span class="pill">${j+1}/${ws.length}</span></div></div>
+  <div class="card flash pop" data-act="say" data-w="${esc(w.en)}">
+    <span class="tag" style="--c:${w.cat==="v"?"var(--sun)":w.cat==="h"?"var(--nor)":"var(--kid)"};${w.cat==="v"?"color:var(--sunInk)":""}">${CAT[w.cat]}</span>
+    <span class="em">${w.em}</span><span class="w">${esc(w.en)}</span><span class="t">${esc(w.th)}</span>
+    <button class="speak" data-act="say" data-w="${esc(w.en)}" aria-label="ฟังเสียง">🔊</button>
+  </div>
+  <div class="bar"><div class="in">
+    <button class="btn" data-act="prev" ${j===0?"disabled":""}>← ก่อนหน้า</button>
+    ${j<ws.length-1?`<button class="btn main" data-act="next">ต่อไป →</button>`:`<button class="btn main" data-act="test">📝 พร้อมสอบแล้ว!</button>`}
+  </div></div>`;
+}
+
+/* ---------- quiz ---------- */
+function canSpell(w){return /^[a-z]+$/.test(w.en)&&w.en.length<=10}
+function makeQuiz(i,practice){
+  const ws=lessonWords(i);
+  const pick=practice?shuffle(ws).slice(0,10):shuffle(ws);
+  // สอบจริง: เน้นการอ่าน (อ่านคำ→รูป, อ่านคำ→ความหมาย, อ่านประโยคเติมคำ) มีสะกดคำบ้าง ไม่มีโจทย์ฟัง
+  // ข้อสอบและการฝึกใช้ 2 แบบ: อ่านประโยคเติมคำ กับ เรียงตัวอักษรสะกดคำ
+  const types=["sentence","spell"];
+  const READ=["sentence"];
+  let rot=shuffle(types),ri=0;
+  return pick.map(w=>{
+    let t=rot[ri++%rot.length];
+    if(ri%rot.length===0)rot=shuffle(types);
+    if(t==="spell"&&!canSpell(w))t="sentence";
+    const pool=ws.filter(x=>x!==w&&x.th!==w.th&&x.em!==w.em&&x.en!==w.en);
+    const same=shuffle(pool.filter(x=>x.cat===w.cat)), other=shuffle(pool.filter(x=>x.cat!==w.cat));
+    const opts=shuffle([w,...[...same,...other].slice(0,3)]);
+    const q={w,t,opts};
+    if(t==="spell"){q.tiles=shuffle(w.en.split("").map((ch,ix)=>({ch,ix})));q.used=[]}
+    if(t==="sentence")q.s=sentenceFor(w);
+    return q;
+  });
+}
+function startQuiz(practice){
+  view={name:"quiz",kid:view.kid,i:view.i,practice,qs:makeQuiz(view.i,practice),n:0,ok:0,missed:[],answered:null,busy:true};
+  render();window.scrollTo(0,0);
+}
+function vQuiz(){
+  const q=view.qs[view.n], w=q.w, total=view.qs.length, a=view.answered;
+  let body="";
+  const first=q.t==="sentence"&&q.s.startsWith("___");
+  const ansWord=first?w.en.charAt(0).toUpperCase()+w.en.slice(1):w.en;
+  const full=q.t==="sentence"?q.s.replace("___",ansWord):w.en;
+  const hear=`<button class="speak sm" data-act="say" data-w="${esc(full)}" aria-label="ฟังเสียง">🔊</button>`;
+  const fb=a==null?"":`<div class="row" style="justify-content:center">${a.ok?`<div class="feedback ok pop">เก่งมาก! ✔</div>`:`<div class="feedback no">คำตอบคือ <b class="en">${esc(w.en)}</b> = ${esc(w.th)} ${w.em}</div>`}${hear}</div>`;
+  const optCls=o=>a==null?"":o===w?"right":(a.pick===o?"wrong":"");
+  if(q.t==="readpic"){
+    body=`<div class="ask">อ่านคำนี้ แล้วเลือกรูปที่ถูก</div><div class="big en">${esc(w.en)}</div>
+    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt emo ${optCls(o)}" data-act="pick" data-ix="${ix}">${o.em}</button>`).join("")}</div>`;
+  }else if(q.t==="sentence"){
+    const s=esc(q.s).replace("___",a?`<u>${esc(ansWord)}</u>`:`<span class="blank"></span>`);
+    body=`<div class="ask">อ่านประโยค แล้วเลือกคำที่หายไป</div><div class="emo">${w.em}</div><div class="sent en">${s}</div>
+    ${a?`<div class="muted">${esc(w.en)} = ${esc(w.th)}</div>`:""}
+    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt en ${optCls(o)}" data-act="pick" data-ix="${ix}">${esc(o.en)}</button>`).join("")}</div>`;
+  }else if(q.t==="listen"){
+    body=`<div class="ask">ฟังแล้วเลือกรูปที่ถูก</div><button class="speak" data-act="say" data-w="${esc(w.en)}" aria-label="ฟังอีกครั้ง">🔊</button>
+    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt emo ${optCls(o)}" data-act="pick" data-ix="${ix}">${o.em}</button>`).join("")}</div>`;
+  }else if(q.t==="th2en"){
+    body=`<div class="ask">อ่านตัวเลือก แล้วหาคำภาษาอังกฤษของคำนี้</div><div class="big">${esc(w.th)}</div>
+    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt en ${optCls(o)}" data-act="pick" data-ix="${ix}">${esc(o.en)}</button>`).join("")}</div>`;
+  }else if(q.t==="en2th"){
+    body=`<div class="ask">อ่านคำนี้ แล้วเลือกความหมาย</div><div class="big en">${esc(w.en)}</div>
+    <div class="opts">${q.opts.map((o,ix)=>`<button class="opt ${optCls(o)}" data-act="pick" data-ix="${ix}">${esc(o.th)}</button>`).join("")}</div>`;
+  }else{
+    const built=q.used.map(u=>q.tiles[u].ch);
+    body=`<div class="ask">เรียงตัวอักษรให้เป็นคำ</div><div class="emo">${w.em}</div><div class="row" style="justify-content:center"><div class="big" style="font-size:28px">${esc(w.th)}</div><button class="speak" data-act="say" data-w="${esc(w.en)}" aria-label="ฟังเสียง">🔊</button></div>
+    <div class="slots">${w.en.split("").map((_,ix)=>`<button class="slot ${built[ix]?"f":""}" data-act="unspell" data-ix="${ix}" ${a?"disabled":""}>${built[ix]?esc(built[ix]):""}</button>`).join("")}</div>
+    ${a?"":`<div class="tiles">${q.tiles.map((t,ix)=>`<button class="tile ${q.used.includes(ix)?"used":""}" data-act="spell" data-ix="${ix}">${esc(t.ch)}</button>`).join("")}</div>`}`;
+  }
+  return `<div class="top"><button class="back" data-act="quit">✕ ออก</button>
+    <div class="row" style="flex:1;justify-content:flex-end"><div class="progress"><i style="width:${(view.n+(a?1:0))/total*100}%"></i></div><span class="pill">${view.n+1}/${total}</span>
+    <span class="pill">${view.practice?"🎯 ฝึก":"📝 สอบ"} ✔ ${view.ok}</span></div></div>
+  <div class="card q">${body}${fb}</div>
+  ${a&&!a.ok?`<div class="bar"><div class="in"><button class="btn main" data-act="nextq">ข้อต่อไป →</button></div></div>`:""}`;
+}
+function answer(ok,pick){
+  const q=view.qs[view.n];
+  view.answered={ok,pick};
+  if(ok){view.ok++;beep(true);render();setTimeout(nextQ,950)}
+  else{view.missed.push(q.w);beep(false);render();setTimeout(()=>say(q.w.en),350)}
+}
+function nextQ(){
+  if(view.name!=="quiz")return;
+  if(!view.answered)return;
+  view.answered=null;view.n++;
+  if(view.n>=view.qs.length){finishQuiz();return}
+  render();
+  const q=view.qs[view.n];if(q.t==="listen")setTimeout(()=>say(q.w.en),250);
+}
+function finishQuiz(){
+  const total=view.qs.length, pct=Math.round(view.ok/total*100), pass=pct>=PASS;
+  const id=view.kid, i=view.i;
+  if(view.snaps){for(const k in view.snaps)kids[k]=view.snaps[k];view.snaps=null}
+  const res={name:"result",kid:id,i,practice:view.practice,pct,ok:view.ok,total,missed:view.missed,pass};
+  if(!view.practice){
+    const d=kids[id];
+    d.attempts.push({l:i,p:pct,c:view.ok,n:total,t:Date.now(),m:view.missed.map(w=>w.en)});
+    if(d.attempts.length>200)d.attempts=d.attempts.slice(-200);
+    view.missed.forEach(w=>{d.missed[w.en]=(+d.missed[w.en]||0)+1});
+    if(!d.days.includes(today()))d.days.push(today());
+    if(d.days.length>120)d.days=d.days.slice(-120);
+    d.best[i]=Math.max(+d.best[i]||0,pct);
+    const st=starsFor(pct);if(st>(+d.stars[i]||0))d.stars[i]=st;
+    res.firstPass=pass&&!d.passed[i];
+    if(pass&&!d.passed[i])d.passed[i]=today();
+    d.last=Date.now();
+    writeDoc("kids/"+id,d);
+  }
+  view=res;render();window.scrollTo(0,0);
+  if(!res.practice&&pass)setTimeout(()=>{beep(true);setTimeout(()=>beep(true),250)},200);
+}
+function vResult(){
+  const k=kidById(view.kid), r=view, st=starsFor(r.pct), i=r.i, d=kids[k.id];
+  const nextOpen=i<NL-1&&unlocked(d,i+1);
+  let msg;
+  if(r.practice)msg=r.pct>=PASS?"ฝึกได้ดีมาก ลองสอบจริงเลย!":"ฝึกอีกนิด แล้วจะเก่งขึ้น";
+  else if(r.pass)msg=i===NL-1?"เก่งที่สุด! เรียนจบครบ "+NL+" บทแล้ว 🎉":nextOpen?"ผ่านแล้ว! บทต่อไปเปิดแล้ว":"ผ่านแล้ว! บทที่ "+(i+2)+" จะเปิดพรุ่งนี้ 🌙";
+  else msg="ยังไม่ถึง "+PASS+"% ทบทวนคำที่ผิดแล้วสอบใหม่ได้เลย";
+  return `<div class="card result">
+    <div style="font-size:64px" class="pop">${r.practice?"🎯":r.pass?"🏆":"💪"}</div>
+    <h2>${r.practice?"ผลการฝึก":r.pass?"สอบผ่าน!":"เกือบแล้ว!"}</h2>
+    <div class="score" style="color:${r.pass||r.practice&&r.pct>=PASS?"var(--ok)":"var(--bad)"}">${r.pct}%</div>
+    <div class="muted">ถูก ${r.ok} จาก ${r.total} ข้อ ${r.practice?"":"· ต้องได้ "+PASS+"%"}</div>
+    ${!r.practice&&r.pass?`<div class="stars pop">${"⭐".repeat(st)}${"☆".repeat(3-st)}</div>`:""}
+    <p style="font-family:var(--f-display);font-size:19px;margin:4px 0">${msg}</p>
+    ${r.missed.length?`<div class="muted">คำที่ตอบผิด (แตะเพื่อฟัง)</div><div class="missed">${r.missed.map(w=>`<button class="chip" data-act="say" data-w="${esc(w.en)}">${w.em} <b>${esc(w.en)}</b> ${esc(w.th)}</button>`).join("")}</div>`:""}
+  </div>
+  <div class="bar"><div class="in">
+    <button class="btn" data-act="lesson" data-i="${i}">📖 ทบทวนบทนี้</button>
+    ${!r.practice&&r.pass&&nextOpen?`<button class="btn main" data-act="lesson" data-i="${i+1}">บทที่ ${i+2} →</button>`:
+      r.practice?`<button class="btn main" data-act="test">📝 สอบจริง</button>`:
+      r.pass?`<button class="btn main" data-act="kid" data-id="${k.id}">กลับหน้าบทเรียน</button>`:`<button class="btn main" data-act="test">🔁 สอบใหม่</button>`}
+  </div></div>`;
+}
+
+/* ---------- parent ---------- */
+function vGate(){
+  if(!view.a){view.a=3+Math.floor(Math.random()*7);view.b=4+Math.floor(Math.random()*6)}
+  view.after=()=>{const el=$("#gate-ans");if(el)el.focus()};
+  return `<div class="top"><button class="back" data-act="home">← กลับ</button></div>
+  <div class="card stack" style="align-items:center;text-align:center;padding:30px 18px">
+    <h2>สำหรับคุณพ่อ</h2><p class="muted" style="margin:0">ตอบโจทย์นี้เพื่อเข้าดูความก้าวหน้า</p>
+    <div style="font-family:var(--f-display);font-size:40px">${view.a} × ${view.b} = ?</div>
+    <form id="gate-form" class="row" style="justify-content:center"><input id="gate-ans" class="num" inputmode="numeric" autocomplete="off" aria-label="คำตอบ"><button class="btn main" type="submit">เข้าดู</button></form>
+  </div>`;
+}
+function chart(d){
+  const at=d.attempts.slice(-14);
+  if(!at.length)return `<p class="muted">ยังไม่มีการสอบ ผลสอบจะขึ้นที่นี่หลังสอบครั้งแรก</p>`;
+  const W=600,Hh=210,L=34,B=34,T=12,pw=W-L-10,ph=Hh-T-B,bw=pw/14;
+  const y=v=>T+ph-(v/100)*ph;
+  let s=`<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="คะแนนสอบล่าสุด">`;
+  [0,50,80,100].forEach(v=>{s+=`<line x1="${L}" x2="${W-10}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1" ${v===80?'stroke-dasharray="5 4" style="stroke:var(--sun)" stroke-width="2"':""}/>
+    <text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="var(--muted)">${v}</text>`});
+  at.forEach((a,ix)=>{const x=L+ix*bw+bw*0.18,w=bw*0.64,p=Math.max(0,Math.min(100,+a.p||0));
+    s+=`<rect x="${x}" y="${y(p)}" width="${w}" height="${Math.max(1,y(0)-y(p))}" rx="4" fill="${p>=PASS?"var(--ok)":"var(--bad)"}"><title>บทที่ ${(+a.l||0)+1}: ${p}%</title></rect>
+    <text x="${x+w/2}" y="${y(p)-4}" text-anchor="middle" font-size="11" fill="var(--ink)">${p}</text>
+    <text x="${x+w/2}" y="${Hh-B+16}" text-anchor="middle" font-size="11" fill="var(--muted)">บท${(+a.l||0)+1}</text>
+    <text x="${x+w/2}" y="${Hh-B+30}" text-anchor="middle" font-size="10" fill="var(--muted)">${esc(thDate(dayOf(+a.t||0)))}</text>`});
+  return `<div class="chartwrap">${s}</svg></div><p class="muted" style="font-size:13px;margin:4px 0 0">เส้นประสีเหลือง = เกณฑ์ผ่าน ${PASS}% · แสดง 14 ครั้งล่าสุด</p>`;
+}
+function vDash(){
+  return `<div class="top"><button class="back" data-act="home">← หน้าแรก</button><span class="pill">${mode==="online"?"☁️ ข้อมูลออนไลน์":"📱 ข้อมูลในเครื่องนี้"}</span></div>
+  <h1>ความก้าวหน้าของลูก</h1><p class="muted" style="margin:4px 0 18px">อัปเดตทันทีเมื่อลูกสอบเสร็จ จากเครื่องไหนก็ได้</p>
+  <div class="stack">
+  ${KIDS.map(k=>{const d=kids[k.id];const passed=Object.keys(d.passed).length;const at=d.attempts;const last=at[at.length-1];
+    const cur=Math.min(NL-1,passed);
+    const weak=Object.entries(d.missed).sort((a,b)=>b[1]-a[1]).slice(0,12);
+    const findW=en=>V.concat(H,S).find(x=>x[0]===en);
+    return `<section class="card dash-kid" style="--c:${k.c}">
+      <div class="row"><span style="font-size:40px">${k.ava}</span><h2 style="color:${k.c}">${k.name}</h2>
+        <span class="pill" style="margin-left:auto">${passed>=NL?"เรียนจบ "+NL+" บท":"กำลังเรียนบทที่ "+(cur+1)}</span></div>
+      <div class="stats">
+        <div class="stat"><div class="v">${passed}/${NL}</div><div class="l">บทที่สอบผ่าน</div></div>
+        <div class="stat"><div class="v">${passed*30}</div><div class="l">คำศัพท์ที่ผ่านแล้ว</div></div>
+        <div class="stat"><div class="v">${totalStars(d)}</div><div class="l">ดาวที่ได้ (เต็ม ${NL*3})</div></div>
+        <div class="stat"><div class="v">${at.length}</div><div class="l">จำนวนครั้งที่สอบ</div></div>
+        <div class="stat"><div class="v">${last?last.p+"%":"-"}</div><div class="l">คะแนนครั้งล่าสุด</div></div>
+        <div class="stat"><div class="v">${streak(d)}</div><div class="l">วันที่เล่นติดกัน</div></div>
+      </div>
+      <h3 style="margin-bottom:6px">คะแนนสอบ</h3>${chart(d)}
+      ${at.length?`<h3 style="margin:16px 0 6px">ประวัติการสอบล่าสุด</h3><div class="tblwrap"><table><thead><tr><th>วันที่</th><th>บท</th><th>คะแนน</th><th>ผล</th></tr></thead><tbody>
+        ${at.slice(-8).reverse().map(a=>{const dt=new Date(+a.t||0);return `<tr><td>${esc(thDate(dayOf(+a.t||0)))} ${pad(dt.getHours())}:${pad(dt.getMinutes())}</td><td>${(+a.l||0)+1}</td><td>${+a.c||0}/${+a.n||0} (${+a.p||0}%)</td><td class="${a.p>=PASS?"okt":"badt"}">${a.p>=PASS?"ผ่าน":"ไม่ผ่าน"}</td></tr>`}).join("")}
+      </tbody></table></div>`:""}
+      <h3 style="margin:16px 0 6px">คำที่ผิดบ่อย</h3>
+      ${weak.length?`<div class="missed" style="justify-content:flex-start">${weak.map(([en,c])=>{const w=findW(en);return `<button class="chip" data-act="say" data-w="${esc(en)}">${w?w[2]:""} <b>${esc(en)}</b> ${w?esc(w[1]):""} <span class="muted">×${+c||0}</span></button>`}).join("")}</div>`:`<p class="muted">ยังไม่มีคำที่ตอบผิด</p>`}
+    </section>`}).join("")}
+  <section class="card stack">
+    <h3>ตั้งค่า</h3>
+    <label class="switch"><input type="checkbox" id="same-day" ${settings.sameDay?"checked":""}><span>ให้เลื่อนไปบทถัดไปได้ทันทีในวันเดียวกัน<br><span class="muted" style="font-size:14px">ปกติ: สอบผ่านแล้ว บทใหม่จะเปิดวันถัดไป (วันละ 30 คำ)</span></span></label>
+  </section>
+  </div>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b||b.disabled)return;
+  const act=b.dataset.act;
+  if(act==="say"){e.stopPropagation();say(b.dataset.w);return}
+  if(act==="home")return go({name:"home"});
+  if(act==="kid")return go({name:"kid",kid:b.dataset.id});
+  if(act==="gate")return go({name:"gate"});
+  if(act==="lesson"){const i=+b.dataset.i;const d=kids[view.kid];
+    if(!unlocked(d,i)&&!d.passed[i]){toast(d.passed[i-1]?"บทนี้จะเปิดพรุ่งนี้ วันนี้ทบทวนบทเดิมก่อนนะ":"ต้องสอบผ่านบทก่อนหน้าก่อน");return}
+    return go({name:"lesson",kid:view.kid,i})}
+  if(act==="learn")return go({name:"learn",kid:view.kid,i:view.i,j:0});
+  if(act==="next"){view.j++;render();return}
+  if(act==="prev"){view.j--;render();return}
+  if(act==="practice")return startQuiz(true);
+  if(act==="test")return startQuiz(false);
+  if(act==="quit"){const v=view;if(v.snaps){for(const k in v.snaps)kids[k]=v.snaps[k]}return go({name:"lesson",kid:v.kid,i:v.i})}
+  if(act==="nextq")return nextQ();
+  if(view.name==="quiz"&&!view.answered){
+    const q=view.qs[view.n];
+    if(act==="pick"){const o=q.opts[+b.dataset.ix];answer(o===q.w,o);return}
+    if(act==="spell"){const ix=+b.dataset.ix;if(q.used.includes(ix))return;q.used.push(ix);
+      if(q.used.length===q.w.en.length){const word=q.used.map(u=>q.tiles[u].ch).join("");answer(word===q.w.en,null)}else render();return}
+    if(act==="unspell"){const ix=+b.dataset.ix;if(ix<q.used.length){q.used.splice(ix);render()}return}
+  }
+});
+document.addEventListener("submit",e=>{
+  if(e.target.id!=="gate-form")return;e.preventDefault();
+  const v=+$("#gate-ans").value;
+  if(v===view.a*view.b)go({name:"dash"});else{toast("ยังไม่ถูก ลองใหม่");view.a=null;render()}
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="same-day"){settings={sameDay:e.target.checked};writeDoc("settings/main",settings);toast(settings.sameDay?"เปิดบทถัดไปได้ทันที":"เปิดบทใหม่วันละบท")}
+});
+
+render();
+initStore();
+</script>
+
+</body>
+</html>
