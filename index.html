@@ -334,10 +334,10 @@ const blank=()=>({passed:{},best:{},stars:{},attempts:[],missed:{},days:[],last:
 function norm(d){const b=blank();if(!d||typeof d!=="object")return b;const o=JSON.parse(JSON.stringify(d));
   for(const k of Object.keys(b)){if(o[k]==null||typeof o[k]!==typeof b[k]||Array.isArray(b[k])!==Array.isArray(o[k]))o[k]=b[k]}
   if(o.last!=null&&typeof o.last!=="number")o.last=null;return o}
-let kids={nor:blank(),kid:blank()}, settings={sameDay:false};
+let kids={nor:blank(),kid:blank()}, settings={dailyLimit:false};
 let mode="loading", DB=null, gotFirst={nor:false,kid:false};
 const LKEY="nor-kid-english-v1";
-function localLoad(){try{const s=JSON.parse(localStorage.getItem(LKEY)||"null");if(s){kids.nor=norm(s.nor);kids.kid=norm(s.kid);settings={sameDay:!!(s.settings&&s.settings.sameDay)}}}catch(e){}}
+function localLoad(){try{const s=JSON.parse(localStorage.getItem(LKEY)||"null");if(s){kids.nor=norm(s.nor);kids.kid=norm(s.kid);settings={dailyLimit:!!(s.settings&&s.settings.dailyLimit)}}}catch(e){}}
 function localSave(){try{localStorage.setItem(LKEY,JSON.stringify({nor:kids.nor,kid:kids.kid,settings}))}catch(e){}}
 const queue={};
 function writeDoc(path,body){
@@ -368,7 +368,7 @@ async function initStore(){
   });
   let firstS=true;
   db.doc("settings/main").onSnapshot(s=>{
-    settings={sameDay:!!(s.exists&&s.data().sameDay)};
+    settings={dailyLimit:!!(s.exists&&s.data().dailyLimit)};
     if(firstS&&!s.metadata.fromCache){firstS=false;done()}
     if(mode==="online")refresh();
   },()=>{});
@@ -390,7 +390,7 @@ function weeklyPick(k,key,pool){
   take(recent,18);take(missed,26);take(shuffle(pool),30);
   return shuffle(out);
 }
-function baseUnlocked(k,i){if(i===0)return true;const p=k.passed[i-1];if(!p)return false;return settings.sameDay||p<today()}
+function baseUnlocked(k,i){if(i===0)return true;const p=k.passed[i-1];if(!p)return false;return !settings.dailyLimit||p<today()}
 function unlocked(k,i){if(k.passed[i])return true;if(weeklyDue(k))return false;return baseUnlocked(k,i)}
 function lessonState(k,i){if(k.passed[i])return "done";if(baseUnlocked(k,i))return weeklyDue(k)?"weekly":"open";if(k.passed[i-1])return "tomorrow";return "locked"}
 function resumeText(r){return (r.weekly?"สอบรอบยอด":(r.practice?"การฝึก":"ข้อสอบ")+" บทที่ "+(r.i+1))+" ทำไปแล้ว "+r.n+"/"+r.qs.length+" ข้อ"}
@@ -747,7 +747,7 @@ function vDash(){
     </section>`}).join("")}
   <section class="card stack">
     <h3>ตั้งค่า</h3>
-    <label class="switch"><input type="checkbox" id="same-day" ${settings.sameDay?"checked":""}><span>ให้เลื่อนไปบทถัดไปได้ทันทีในวันเดียวกัน<br><span class="muted" style="font-size:14px">ปกติ: สอบผ่านแล้ว บทใหม่จะเปิดวันถัดไป (วันละ 30 คำ)</span></span></label>
+    <label class="switch"><input type="checkbox" id="daily-limit" ${settings.dailyLimit?"checked":""}><span>จำกัดบทใหม่วันละ 1 บท<br><span class="muted" style="font-size:14px">ปกติ: สอบผ่านแล้วเรียนบทถัดไปได้ทันที · ถ้าเปิดตัวเลือกนี้ บทใหม่จะเปิดวันถัดไป</span></span></label>
   </section>
   </div>`;
 }
@@ -796,7 +796,7 @@ document.addEventListener("submit",e=>{
   if(v===view.a*view.b)go({name:"dash"});else{toast("ยังไม่ถูก ลองใหม่");view.a=null;render()}
 });
 document.addEventListener("change",e=>{
-  if(e.target.id==="same-day"){settings={sameDay:e.target.checked};writeDoc("settings/main",settings);toast(settings.sameDay?"เปิดบทถัดไปได้ทันที":"เปิดบทใหม่วันละบท")}
+  if(e.target.id==="daily-limit"){settings={dailyLimit:e.target.checked};writeDoc("settings/main",settings);toast(settings.dailyLimit?"เปิดบทใหม่วันละบท":"สอบผ่านแล้วเรียนบทถัดไปได้ทันที")}
 });
 
 render();
