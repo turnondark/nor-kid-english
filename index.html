@@ -124,6 +124,12 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sun);outline-of
 .tile.used{visibility:hidden}
 .feedback{font-family:var(--f-display);font-size:22px;min-height:34px}
 .speak.sm{width:52px;height:52px;font-size:24px}
+.sent-th{font-size:20px;color:var(--muted);margin-top:-4px}
+.example{margin-top:14px;padding:14px 16px;border-radius:16px;background:var(--bg);width:100%;max-width:520px;display:flex;flex-direction:column;gap:6px}
+.ex-label{font-family:var(--f-display);font-size:14px;color:var(--muted)}
+.ex-en{font-size:clamp(24px,5.5vw,32px);font-weight:700;line-height:1.3}
+.ex-en u{text-decoration-color:var(--sun);text-decoration-thickness:4px;text-underline-offset:5px}
+.ex-th{font-size:19px;color:var(--muted)}
 .sent{font-size:clamp(26px,6.5vw,38px);font-weight:700;line-height:1.3}
 .sent u{text-decoration-color:var(--sun);text-decoration-thickness:5px;text-underline-offset:6px}
 .blank{display:inline-block;width:3.2em;height:.9em;border-bottom:5px solid var(--c);vertical-align:baseline}
@@ -242,43 +248,87 @@ const S=[ // ของใช้ในโรงเรียน 100 คำ
 ["video","วิดีโอ","📹"],["movie","ภาพยนตร์","🎬"],["satellite","ดาวเทียม","🛰️"],["rocket","จรวด","🚀"],["planet","ดาวเคราะห์","🪐"],["email","อีเมล","📧"],["website","เว็บไซต์","🌐"],["password","รหัสผ่าน","🔐"],["disk","แผ่นดิสก์","💾"],["Wi-Fi","ไวไฟ","📶"],
 ["concert","คอนเสิร์ต","🎼"],["birthday","วันเกิด","🎂"],["camp","ค่าย","🏕️"],["parade","ขบวนพาเหรด","🎊"],["party","งานปาร์ตี้","🥳"],["festival","เทศกาล","🎏"],["holiday","วันหยุด","🏝️"],["circus","ละครสัตว์","🎪"],["magic show","มายากล","🎩"],["zoo","สวนสัตว์","🦁"],
 ["morning","ตอนเช้า","🌄"],["afternoon","ตอนบ่าย","🌤️"],["evening","ตอนเย็น","🌇"],["night","กลางคืน","🌃"],["breakfast","อาหารเช้า","🥞"],["lunch","อาหารกลางวัน","🍛"],["dinner","อาหารเย็น","🍝"],["time","เวลา","🕐"],["week","สัปดาห์","🗓️"],["month","เดือน","📆"]];
-// ประโยคสำหรับข้อสอบอ่าน (___ = คำที่หายไป)
-const PHR={rain:"It will ___ today.",snow:"It will ___ today.",shine:"The sun will ___.",blow:"The wind will ___.",melt:"The ice will ___.",freeze:"The water will ___.",burn:"Fire can ___.",fall:"Leaves ___ from trees.",
-need:"I ___ water.",have:"I ___ a cat.",want:"I ___ a toy.",like:"I ___ ice cream.",love:"I ___ my mom.",know:"I ___ the answer.",lose:"Don't ___ your key.",forget:"Don't ___ your bag.",miss:"I ___ you.",hate:"I ___ bugs.",
-mean:"What does it ___?",worry:"Don't ___.",hope:"I ___ you win.",wish:"I ___ I could fly.",think:"I ___ so.",see:"I ___ a bird.",hear:"I ___ a sound.",feel:"I ___ happy.",smell:"I ___ the flowers.",
-get:"I ___ a gift.",give:"___ me the pen.",take:"___ a pencil.",put:"___ it on the table.",say:"___ hello.",tell:"___ me a story.",ask:"___ the teacher.",answer:"___ the question.",thank:"___ you!",
-agree:"I ___ with you.",understand:"I ___ English.",believe:"I ___ you.",care:"I ___ about you.",enjoy:"I ___ the game.",dream:"I ___ at night.",win:"We will ___!",fly:"Birds can ___.",grow:"Plants ___ fast.",
-live:"I ___ in Thailand.",wear:"___ your hat.",keep:"___ your room clean.",send:"___ a letter.",visit:"Let's ___ Grandma.",show:"___ me your book.",open:"___ the door.",close:"___ the window.",
-read:"___ a book.",write:"___ your name.",eat:"Let's ___ rice.",drink:"___ some water.",wash:"___ your hands.",brush:"___ your teeth.",find:"___ your shoes.",wait:"___ for me.",stop:"___ the car!",
-start:"___ the game.",finish:"___ your homework.",count:"___ to ten.",cut:"___ the paper.",buy:"I ___ candy.",sell:"They ___ fruit.",pay:"Please ___ here.",spill:"Don't ___ the milk.",break:"Don't ___ the glass.",
-borrow:"Can I ___ your pen?",lend:"Can you ___ me a pen?",return:"___ the book.",spend:"Don't ___ all your money.",save:"___ your money.",earn:"I ___ money.",order:"Let's ___ pizza.",
-cross:"___ the road.",turn:"___ left.",park:"___ the car here.",enter:"Please ___ the room.",leave:"Don't ___ me.",arrive:"We ___ at school.",follow:"___ me.",lead:"You ___ the way.",
-greet:"___ the teacher.",invite:"___ your friends.",protect:"___ the baby.",explain:"Please ___ it.",join:"Come and ___ us.",celebrate:"Let's ___!",pray:"We ___ at the temple.",
-check:"___ your answer.",spell:"___ your name.",copy:"___ the words.",repeat:"___ after me.",guess:"___ the answer.",choose:"___ a color.",decide:"You ___.",match:"___ the pictures.",add:"___ two and three.",subtract:"___ one from five.",
-pick:"___ an apple.",fill:"___ the cup.",hang:"___ your coat.",tie:"___ your shoes.",fold:"___ the paper.",sew:"Grandma can ___.",fix:"Dad can ___ it.",dig:"Dogs can ___.",sweep:"___ the floor.",knock:"___ on the door.",
-feed:"___ the cat.",peel:"___ the banana.",chop:"___ the carrot.",boil:"___ the water.",pour:"___ the milk.",mix:"___ the eggs.",bake:"Let's ___ a cake.",fry:"___ an egg.",bite:"Dogs can ___.",chew:"___ your food.",
-dry:"___ your hands.",use:"___ a spoon.",try:"___ again!",study:"___ for the test.",watch:"Let's ___ TV.",taste:"___ the soup.",hold:"___ my hand.",touch:"Don't ___ it!",ride:"I can ___ a bike.",drive:"Dad can ___.",
-do:"___ your homework.",make:"Let's ___ a kite.",play:"Let's ___!",go:"Let's ___!",come:"___ here.",sit:"Please ___ down.",stand:"Please ___ up.",sleep:"Time to ___.","wake up":"___, it's morning!",
-help:"Can you ___ me?",teach:"Teachers ___ us.",learn:"I ___ English.",shout:"Don't ___.",whisper:"Please ___.",wave:"___ goodbye.",point:"___ at the board.",hug:"___ your mom.",kiss:"___ the baby.",
-"lie down":"Please ___.",rest:"Let's ___.",shake:"___ the bottle.",hide:"Let's ___!",chase:"Cats ___ mice.",roll:"___ the ball.",spin:"___ around.",slide:"___ down.",hop:"Rabbits ___.",crawl:"Babies ___.",
-bounce:"___ the ball.",float:"Boats ___ on water.",tickle:"Don't ___ me!",clap:"___ your hands.",carry:"___ the box.",bring:"___ your bag.",call:"___ your mom.",push:"___ the door.",pull:"___ the rope.",
-move:"___ the chair.",build:"Let's ___ a house.",share:"___ your toys.",remember:"I ___ you.",talk:"Let's ___.",listen:"___ to me.",look:"___ at me.",run:"I can ___ fast.",walk:"Let's ___ to school.",
-jump:"I can ___ high.",swim:"I can ___.",climb:"I can ___ a tree.",throw:"___ the ball.",catch:"___ the ball.",kick:"___ the ball.",laugh:"Don't ___.",cry:"Don't ___.",smile:"Please ___.",dance:"Let's ___!",
-sing:"Let's ___!",draw:"___ a cat.",cook:"Mom can ___.",clean:"___ your room.",travel:"I like to ___.",hurry:"___ up!",pack:"___ your bag.",deliver:"They ___ the box.",wrap:"___ the gift.",work:"Mom and Dad ___ hard.",practice:"___ every day.",
-morning:"Good ___!",afternoon:"Good ___!",evening:"Good ___!",night:"Good ___!",breakfast:"I eat ___ at seven.",lunch:"It is time for ___.",dinner:"We eat ___ at home.",time:"What ___ is it?",week:"See you next ___.",month:"See you next ___.",
-birthday:"Happy ___!",party:"Let's have a ___.",holiday:"I love the ___.",grade:"I got a good ___.",word:"Read the ___.",number:"Say the ___.",password:"Type your ___.",website:"Open the ___.",email:"Read the ___.","Wi-Fi":"Turn on the ___.",
-video:"Let's watch the ___.",movie:"Let's watch a ___.",homework:"Do your ___.",test:"I passed the ___.",friend:"You are my ___.",teacher:"Hello, ___!",money:"I have ___.",school:"I go to ___.",TV:"Turn on the ___.",light:"Turn on the ___."};
+// ประโยคตัวอย่าง [อังกฤษ, ไทย] ใช้ทั้งในการ์ดคำศัพท์และข้อสอบเติมคำ (___ = คำที่หายไป)
+const PHR={
+go:["Let's ___ home.","ไปบ้านกันเถอะ"],come:["___ here.","มานี่สิ"],eat:["Let's ___ rice.","มากินข้าวกันเถอะ"],drink:["___ some water.","ดื่มน้ำหน่อยนะ"],
+see:["I ___ a bird.","ฉันเห็นนกตัวหนึ่ง"],look:["___ at me.","มองฉันสิ"],sit:["Please ___ down.","เชิญนั่งลง"],stand:["Please ___ up.","เชิญยืนขึ้น"],
+sleep:["Time to ___.","ได้เวลานอนหลับแล้ว"],play:["Let's ___!","มาเล่นกันเถอะ!"],
+have:["I ___ a cat.","ฉันมีแมวหนึ่งตัว"],want:["I ___ a toy.","ฉันอยากได้ของเล่น"],like:["I ___ ice cream.","ฉันชอบไอศกรีม"],love:["I ___ my mom.","ฉันรักแม่"],
+make:["Let's ___ a kite.","มาประดิษฐ์ว่าวกันเถอะ"],do:["___ your homework.","ทำการบ้านนะ"],take:["___ a pencil.","หยิบดินสอไปหนึ่งแท่ง"],give:["___ me the pen.","ให้ปากกาฉันหน่อย"],
+run:["I can ___ fast.","ฉันวิ่งได้เร็ว"],walk:["Let's ___ to school.","เดินไปโรงเรียนกันเถอะ"],
+get:["I ___ a gift.","ฉันได้รับของขวัญ"],put:["___ it on the table.","วางมันไว้บนโต๊ะ"],open:["___ the door.","เปิดประตู"],close:["___ the window.","ปิดหน้าต่าง"],
+read:["___ a book.","อ่านหนังสือ"],write:["___ your name.","เขียนชื่อของเธอ"],draw:["___ a cat.","วาดรูปแมว"],sing:["Let's ___ a song.","มาร้องเพลงกันเถอะ"],
+dance:["Let's ___!","มาเต้นกันเถอะ!"],listen:["___ to me.","ฟังฉันนะ"],
+say:["___ hello.","พูดว่าสวัสดี"],talk:["Let's ___.","มาคุยกันเถอะ"],ask:["___ the teacher.","ถามคุณครูสิ"],answer:["___ the question.","ตอบคำถาม"],
+know:["I ___ the answer.","ฉันรู้คำตอบ"],think:["I ___ so.","ฉันคิดว่าใช่"],learn:["I ___ English.","ฉันเรียนรู้ภาษาอังกฤษ"],teach:["Teachers ___ us.","คุณครูสอนพวกเรา"],
+help:["Can you ___ me?","ช่วยฉันหน่อยได้ไหม"],wash:["___ your hands.","ล้างมือนะ"],
+brush:["___ your teeth.","แปรงฟันนะ"],cook:["Mom can ___.","แม่ทำอาหารเป็น"],clean:["___ your room.","ทำความสะอาดห้องนะ"],swim:["I can ___.","ฉันว่ายน้ำเป็น"],
+jump:["I can ___ high.","ฉันกระโดดได้สูง"],climb:["I can ___ a tree.","ฉันปีนต้นไม้ได้"],throw:["___ the ball to me.","ขว้างลูกบอลมาให้ฉัน"],
+catch:["___ the ball with two hands.","รับลูกบอลด้วยสองมือ"],kick:["___ the ball with your foot.","เตะลูกบอลด้วยเท้า"],laugh:["Don't ___.","อย่าหัวเราะนะ"],
+cry:["Don't ___.","อย่าร้องไห้นะ"],smile:["Please ___.","ยิ้มหน่อยนะ"],buy:["I ___ candy.","ฉันซื้อลูกอม"],sell:["They ___ fruit.","พวกเขาขายผลไม้"],
+pay:["Please ___ here.","กรุณาจ่ายเงินที่นี่"],find:["___ your shoes.","หารองเท้าของเธอให้เจอ"],lose:["Don't ___ your key.","อย่าทำกุญแจหายนะ"],
+wait:["___ for me.","รอฉันด้วย"],stop:["___ the car!","หยุดรถ!"],start:["___ the game.","เริ่มเกมได้เลย"],
+finish:["___ your homework.","ทำการบ้านให้เสร็จ"],call:["___ your mom.","โทรหาแม่สิ"],tell:["___ me a story.","บอกเรื่องราวให้ฉันฟังหน่อย"],
+show:["___ me your book.","ให้ฉันดูหนังสือของเธอหน่อย"],bring:["___ your bag.","นำกระเป๋ามาด้วยนะ"],carry:["___ the box.","แบกกล่อง"],
+push:["___ the door.","ผลักประตู"],pull:["___ the rope.","ดึงเชือก"],cut:["___ the paper.","ตัดกระดาษ"],count:["___ to ten.","นับถึงสิบ"],
+wear:["___ your hat.","สวมหมวกของเธอสิ"],ride:["I can ___ a bike.","ฉันขี่จักรยานเป็น"],drive:["Dad can ___.","พ่อขับรถเป็น"],fly:["Birds can ___.","นกบินได้"],
+fall:["Leaves ___ from trees.","ใบไม้ตกลงมาจากต้นไม้"],hold:["___ my hand.","จับมือฉันไว้"],touch:["Don't ___ it!","อย่าแตะมันนะ!"],
+feel:["I ___ happy.","ฉันรู้สึกมีความสุข"],hear:["I ___ a sound.","ฉันได้ยินเสียง"],smell:["I ___ the flowers.","ฉันดมกลิ่นดอกไม้"],
+taste:["___ the soup.","ชิมซุป"],watch:["Let's ___ TV.","มาดูทีวีกันเถอะ"],"wake up":["___, it's morning!","ตื่นนอนได้แล้ว เช้าแล้ว!"],
+live:["I ___ in Thailand.","ฉันอาศัยอยู่ที่ประเทศไทย"],work:["Mom and Dad ___ hard.","พ่อกับแม่ทำงานหนัก"],study:["___ for the test.","ทบทวนบทเรียนก่อนสอบ"],
+practice:["___ every day.","ฝึกซ้อมทุกวัน"],try:["___ again!","ลองทำอีกครั้ง!"],use:["___ a spoon.","ใช้ช้อน"],need:["I ___ water.","ฉันจำเป็นต้องมีน้ำ"],
+keep:["___ your room clean.","เก็บรักษาห้องของเธอให้สะอาด"],share:["___ your toys.","แบ่งปันของเล่นนะ"],build:["Let's ___ a house.","มาสร้างบ้านกันเถอะ"],
+grow:["Plants ___ fast.","ต้นไม้เติบโตเร็ว"],win:["We will ___!","พวกเราจะชนะ!"],forget:["Don't ___ your bag.","อย่าลืมกระเป๋านะ"],
+remember:["I ___ you.","ฉันจำเธอได้"],visit:["Let's ___ Grandma.","ไปเยี่ยมคุณยายกันเถอะ"],send:["___ a letter.","ส่งจดหมาย"],move:["___ the chair.","ย้ายเก้าอี้"],
+choose:["___ a color.","เลือกสีมาหนึ่งสี"],decide:["You ___.","เธอตัดสินใจเองนะ"],guess:["___ the answer.","เดาคำตอบดูสิ"],check:["___ your answer.","ตรวจคำตอบของเธอ"],
+spell:["___ your name.","สะกดชื่อของเธอ"],repeat:["___ after me.","พูดตามฉันซ้ำนะ"],copy:["___ the words.","คัดลอกคำเหล่านี้"],match:["___ the pictures.","จับคู่รูปภาพ"],
+add:["___ two and three.","บวกสองกับสาม"],subtract:["___ one from five.","ลบหนึ่งออกจากห้า"],
+hug:["___ your mom.","กอดแม่สิ"],kiss:["___ the baby.","หอมแก้มน้องเล็ก"],clap:["___ your hands.","ปรบมือ"],wave:["___ goodbye.","โบกมือลา"],
+point:["___ at the board.","ชี้ไปที่กระดาน"],shout:["Don't ___.","อย่าตะโกน"],whisper:["___ in my ear.","กระซิบที่หูฉัน"],"lie down":["Please ___ on the bed.","เชิญนอนลงบนเตียง"],
+rest:["Let's ___.","พักผ่อนกันเถอะ"],shake:["___ the bottle.","เขย่าขวด"],
+worry:["Don't ___.","ไม่ต้องกังวลนะ"],hope:["I ___ you win.","ฉันหวังว่าเธอจะชนะ"],wish:["I ___ I could fly.","ฉันอธิษฐานขอให้บินได้"],dream:["I ___ at night.","ฉันฝันตอนกลางคืน"],
+enjoy:["I ___ the game.","ฉันสนุกกับเกมนี้"],hate:["I ___ bugs.","ฉันเกลียดแมลง"],miss:["I ___ you.","ฉันคิดถึงเธอ"],care:["I ___ about you.","ฉันห่วงใยเธอ"],
+thank:["___ you!","ขอบคุณ!"],believe:["I ___ in you.","ฉันเชื่อในตัวเธอ"],
+enter:["Please ___ the room.","เชิญเข้าไปในห้อง"],leave:["Don't ___ me.","อย่าออกไปทิ้งฉันนะ"],arrive:["We ___ at school.","พวกเรามาถึงโรงเรียน"],travel:["I like to ___.","ฉันชอบเดินทาง"],
+follow:["___ me.","ตามฉันมา"],lead:["You ___ the way.","เธอนำทางนะ"],cross:["___ the road.","ข้ามถนน"],turn:["___ left.","เลี้ยวซ้าย"],park:["___ the car here.","จอดรถตรงนี้"],hurry:["___ up!","รีบหน่อย!"],
+bake:["Let's ___ a cake.","มาอบเค้กกันเถอะ"],boil:["___ the water.","ต้มน้ำ"],fry:["___ an egg.","ทอดไข่"],pour:["___ the milk.","เทนม"],mix:["___ the eggs.","ผสมไข่"],
+peel:["___ the banana.","ปอกกล้วย"],chop:["___ the carrot.","สับแครอท"],bite:["Dogs can ___.","สุนัขกัดได้"],chew:["___ your food.","เคี้ยวอาหารนะ"],feed:["___ the cat.","ให้อาหารแมว"],
+hide:["Let's ___!","มาซ่อนกันเถอะ!"],chase:["Cats ___ mice.","แมวไล่จับหนู"],roll:["___ the ball.","กลิ้งลูกบอล"],spin:["___ around.","หมุนตัวไปรอบ ๆ"],slide:["___ down.","ลื่นไถลลงมา"],
+hop:["Rabbits ___.","กระต่ายกระโดด"],crawl:["Babies ___.","เด็กทารกคลาน"],bounce:["Balls ___.","ลูกบอลเด้ง"],float:["Boats ___ on water.","เรือลอยอยู่บนน้ำ"],tickle:["Don't ___ me!","อย่าจั๊กจี้ฉันนะ!"],
+fix:["Dad can ___ it.","พ่อซ่อมมันได้"],break:["Don't ___ the glass.","อย่าทำแก้วแตกนะ"],hang:["___ your coat.","แขวนเสื้อกันหนาว"],fold:["___ the paper.","พับกระดาษ"],
+tie:["___ your shoes.","ผูกเชือกรองเท้า"],sew:["Grandma can ___.","คุณยายเย็บผ้าเป็น"],knock:["___ on the door.","เคาะประตู"],dig:["Dogs can ___.","สุนัขขุดดินได้"],
+fill:["___ the cup.","เติมน้ำให้เต็มถ้วย"],sweep:["___ the floor.","กวาดพื้น"],
+borrow:["Can I ___ your pen?","ขอยืมปากกาหน่อยได้ไหม"],return:["___ the book.","คืนหนังสือนะ"],lend:["Can you ___ me a pen?","ให้ฉันยืมปากกาหน่อยได้ไหม"],
+save:["___ your money.","เก็บออมเงินไว้นะ"],spend:["Don't ___ all your money.","อย่าใช้จ่ายเงินหมดนะ"],earn:["I ___ money.","ฉันหาเงินได้"],
+order:["Let's ___ pizza.","สั่งพิซซ่ากันเถอะ"],pack:["___ your bag.","จัดกระเป๋านะ"],deliver:["They ___ the box.","พวกเขาส่งกล่อง"],wrap:["___ the gift.","ห่อของขวัญ"],
+rain:["It will ___ today.","วันนี้ฝนจะตก"],snow:["It will ___ today.","วันนี้หิมะจะตก"],shine:["The sun will ___.","ดวงอาทิตย์จะส่องแสง"],blow:["The wind will ___.","ลมจะพัด"],
+burn:["Fire can ___.","ไฟเผาไหม้ได้"],melt:["The ice will ___.","น้ำแข็งจะละลาย"],freeze:["The water will ___.","น้ำจะแข็งตัว"],dry:["___ your hands.","เช็ดมือให้แห้งนะ"],
+spill:["Don't ___ the milk.","อย่าทำนมหกนะ"],pick:["___ an apple.","เด็ดแอปเปิลหนึ่งลูก"],
+explain:["Please ___ it.","ช่วยอธิบายหน่อย"],understand:["I ___ English.","ฉันเข้าใจภาษาอังกฤษ"],mean:["What does it ___?","มันหมายความว่าอะไร"],agree:["I ___ with you.","ฉันเห็นด้วยกับเธอ"],
+join:["Come and ___ us.","มาเข้าร่วมกับพวกเราสิ"],invite:["___ your friends.","เชิญเพื่อน ๆ มาสิ"],celebrate:["Let's ___!","มาฉลองกันเถอะ!"],pray:["We ___ at the temple.","พวกเราสวดมนต์ที่วัด"],
+greet:["___ the teacher.","ทักทายคุณครู"],protect:["___ the baby.","ปกป้องน้องเล็ก"],
+// คำนามที่มีประโยคเฉพาะ
+morning:["Good ___!","สวัสดีตอนเช้า!"],afternoon:["Good ___!","สวัสดีตอนบ่าย!"],evening:["Good ___!","สวัสดีตอนเย็น!"],night:["Good ___!","ราตรีสวัสดิ์!"],
+breakfast:["I eat ___ at seven.","ฉันกินอาหารเช้าตอนเจ็ดโมง"],lunch:["It is time for ___.","ได้เวลาอาหารกลางวันแล้ว"],dinner:["We eat ___ at home.","เรากินอาหารเย็นที่บ้าน"],
+time:["What ___ is it?","ตอนนี้เวลาเท่าไร"],week:["See you next ___.","เจอกันสัปดาห์หน้า"],month:["See you next ___.","เจอกันเดือนหน้า"],
+birthday:["Happy ___!","สุขสันต์วันเกิด!"],party:["Let's have a ___.","มาจัดงานปาร์ตี้กันเถอะ"],holiday:["I love the ___.","ฉันชอบวันหยุด"],
+grade:["I got a good ___.","ฉันได้เกรดดี"],word:["Read the ___.","อ่านคำนี้"],number:["Say the ___.","พูดตัวเลขนี้"],password:["Type your ___.","พิมพ์รหัสผ่านของเธอ"],
+website:["Open the ___.","เปิดเว็บไซต์"],email:["Read the ___.","อ่านอีเมล"],"Wi-Fi":["Turn on the ___.","เปิดไวไฟ"],video:["Let's watch the ___.","มาดูวิดีโอกันเถอะ"],
+movie:["Let's watch a ___.","มาดูภาพยนตร์กันเถอะ"],homework:["Do your ___.","ทำการบ้านนะ"],test:["I passed the ___.","ฉันสอบผ่านแล้ว"],friend:["You are my ___.","เธอเป็นเพื่อนของฉัน"],
+teacher:["Hello, ___!","สวัสดีครับคุณครู!"],money:["I have ___.","ฉันมีเงิน"],school:["I go to ___.","ฉันไปโรงเรียน"],TV:["Turn on the ___.","เปิดโทรทัศน์"],light:["Turn on the ___.","เปิดหลอดไฟ"]};
 const LIKE=new Set(["rice","bread","water","juice","candy","cake","noodles","ice cream","pizza","popcorn","honey","cheese","chocolate","math","science","art","music","English","Thai","history","P.E.","health","religion","tennis","baseball","hockey","rugby","bowling","golf","karate","chess"]);
 const GOTO=new Set(["office","hall","field","gym","lab","music room","art room","restroom","stage","concert","camp","parade","festival","circus","magic show","zoo","library","canteen","playground","classroom","kitchen","bedroom","bathroom","living room","garage","garden"]);
 const COLORS=new Set(["red","orange","yellow","green","blue","purple","brown","black","white","pink"]);
+// ประโยคของแต่ละคำคงที่เสมอ (การ์ดกับข้อสอบใช้ประโยคเดียวกัน)
 function sentenceFor(w){
-  if(PHR[w.en])return PHR[w.en];
-  if(w.cat==="v")return Math.random()<.5?"I can ___.":"Let's ___!";
-  if(LIKE.has(w.en))return "I like ___.";
-  if(GOTO.has(w.en))return "Let's go to the ___.";
-  if(COLORS.has(w.en)&&w.th.startsWith("สี"))return "My bag is ___.";
-  return Math.random()<.5?"Look at the ___.":"I see the ___.";
+  const p=PHR[w.en];if(p)return {en:p[0],th:p[1]};
+  if(LIKE.has(w.en))return {en:"I like ___.",th:"ฉันชอบ"+w.th};
+  if(GOTO.has(w.en))return {en:"Let's go to the ___.",th:"ไป"+w.th+"กันเถอะ"};
+  if(COLORS.has(w.en)&&w.th.startsWith("สี"))return {en:"My bag is ___.",th:"กระเป๋าของฉัน"+w.th};
+  let h=0;for(const ch of w.en)h=(h*31+ch.charCodeAt(0))|0;
+  return (h&1)?{en:"Look at the ___.",th:"ดู"+w.th+"สิ"}:{en:"I see the ___.",th:"ฉันเห็น"+w.th};
 }
+const fillIn=(s,word)=>s.replace("___",s.startsWith("___")?word.charAt(0).toUpperCase()+word.slice(1):word);
 
 const mk=(a,cat)=>({en:a[0],th:a[1],em:a[2],cat});
 const LESSONS=[];
@@ -472,6 +522,7 @@ function vLesson(){
 
 function vLearn(){
   const ws=lessonWords(view.i), j=view.j, w=ws[j];
+  const ex=sentenceFor(w), exWord=ex.en.startsWith("___")?w.en.charAt(0).toUpperCase()+w.en.slice(1):w.en;
   view.after=()=>say(w.en);
   return `<div class="top"><button class="back" data-act="lesson" data-i="${view.i}">← กลับ</button>
     <div class="row" style="flex:1;justify-content:flex-end"><div class="progress"><i style="width:${(j+1)/ws.length*100}%"></i></div><span class="pill">${j+1}/${ws.length}</span></div></div>
@@ -479,6 +530,12 @@ function vLearn(){
     <span class="tag" style="--c:${w.cat==="v"?"var(--sun)":w.cat==="h"?"var(--nor)":"var(--kid)"};${w.cat==="v"?"color:var(--sunInk)":""}">${CAT[w.cat]}</span>
     <span class="em">${w.em}</span><span class="w">${esc(w.en)}</span><span class="t">${esc(w.th)}</span>
     <button class="speak" data-act="say" data-w="${esc(w.en)}" aria-label="ฟังเสียง">🔊</button>
+    <div class="example">
+      <div class="ex-label">ประโยคตัวอย่าง</div>
+      <div class="row" style="justify-content:center"><div class="ex-en en">${esc(ex.en).replace("___",`<u>${esc(exWord)}</u>`)}</div>
+      <button class="speak sm" data-act="say" data-w="${esc(fillIn(ex.en,w.en))}" aria-label="ฟังประโยค">🔊</button></div>
+      <div class="ex-th">${esc(ex.th)}</div>
+    </div>
   </div>
   <div class="bar"><div class="in">
     <button class="btn" data-act="prev" ${j===0?"disabled":""}>← ก่อนหน้า</button>
@@ -504,7 +561,7 @@ function makeQuiz(pool,pick){
     const opts=shuffle([w,...[...same,...other].slice(0,3)]);
     const q={w,t,opts};
     if(t==="spell"){q.tiles=shuffle(w.en.split("").map(ch=>({ch})));q.used=[]}
-    else q.s=sentenceFor(w);
+    else{const S=sentenceFor(w);q.s=S.en;q.st=S.th}
     return q;
   });
 }
@@ -514,7 +571,7 @@ function unpackQ(p){
   const q={w:WMAP.get(p.w),t:p.t,opts:(Array.isArray(p.o)?p.o:[]).map(k=>WMAP.get(k))};
   if(!q.w||q.opts.length!==4||q.opts.some(x=>!x))throw new Error("bad question");
   if(q.t==="spell"){q.tiles=String(p.ti||"").split("").map(ch=>({ch}));q.used=[];if(q.tiles.length!==q.w.en.length)throw new Error("bad tiles")}
-  else{q.t="sentence";q.s=String(p.s||"");if(!q.s.includes("___"))q.s=sentenceFor(q.w)}
+  else{q.t="sentence";const S=sentenceFor(q.w);q.s=S.en;q.st=S.th}
   return q;
 }
 function saveProgress(){
@@ -563,7 +620,7 @@ function vQuiz(){
   if(q.t==="sentence"){
     const s=esc(q.s).replace("___",a?`<u>${esc(ansWord)}</u>`:`<span class="blank"></span>`);
     body=`<div class="ask">อ่านประโยค แล้วเลือกคำที่หายไป</div><div class="emo">${w.em}</div><div class="sent en">${s}</div>
-    ${a?`<div class="muted">${esc(w.en)} = ${esc(w.th)}</div>`:""}
+    <div class="sent-th">${esc(q.st)}</div>
     <div class="opts">${q.opts.map((o,ix)=>`<button class="opt en ${optCls(o)}" data-act="pick" data-ix="${ix}">${esc(o.en)}</button>`).join("")}</div>`;
   }else{
     const built=q.used.map(u=>q.tiles[u].ch);
